@@ -2,6 +2,8 @@ spring:
   profiles.active: ${PROFILE:dev}
   jpa:
     show-sql: true 
-    hibernate:
-      ddl-auto: create-drop 
     database-platform: org.hibernate.dialect.PostgreSQLDialect
+app:
+  app-name: steam-analyser
+  api-info:
+    title: Steam Analyser
