@@ -1,9 +1,17 @@
 spring:
   profiles.active: ${PROFILE:dev}
   jpa:
-    show-sql: true 
+    show-sql: true
     database-platform: org.hibernate.dialect.PostgreSQLDialect
+
 app:
   app-name: steam-analyser
   api-info:
     title: Steam Analyser
+logging:
+  level:
+    '[org.springframework.web]': DEBUG
+    '[org.springframework.web.client.RestTemplate]': DEBUG
+
+steam-config:
+  key: 9669055485C21304526FA8DF39A065F7
