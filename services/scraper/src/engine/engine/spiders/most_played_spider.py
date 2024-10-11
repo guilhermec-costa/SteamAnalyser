@@ -4,20 +4,18 @@ import scrapy
 
 class MostPlayedSpider(scrapy.Spider):
   name = "most_played";
+  handle_httpstatus_list = [403]
 
   def start_requests(self) -> Iterable[scrapy.Request]:
-    headers = {
-      "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36",
-      "Referer": "https://steamdb.info/"
-    };
+    headers = { "user-agent": "Googlebot" };
 
     urls = [
-      "https://steamcharts.com",
+      "https://steamdb.info/",
     ];
 
     for url in urls:
       yield scrapy.Request(url=url, callback=self.parse, method="GET", headers=headers);
   
   def parse(self, response: Response, **kwargs: Any) -> Any:
-    print("url: " + response.body);
+    print("url: " + response.url);
 
