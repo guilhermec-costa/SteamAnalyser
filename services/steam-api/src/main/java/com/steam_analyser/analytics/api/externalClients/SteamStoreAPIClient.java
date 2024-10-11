@@ -6,5 +6,5 @@ import org.springframework.web.service.annotation.GetExchange;
 public interface SteamStoreAPIClient {
   
   @GetExchange("appdetails/")
-  public Object appDetails(@RequestParam(name = "appids") Integer appIds);
+  public String appDetails(@RequestParam(name = "appids") Integer appIds);
 }

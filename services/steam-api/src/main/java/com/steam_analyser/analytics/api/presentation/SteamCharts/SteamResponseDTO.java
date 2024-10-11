@@ -21,5 +21,9 @@ public class SteamResponseDTO {
 
     private int last_week_rank;
     private int peak_in_game;
+
+    public String getAppIdString() {
+      return Integer.toString(appid);
+    }
   }
 }
