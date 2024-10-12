@@ -53,6 +53,9 @@ public class SteamAppDetailsResponse {
     @Getter @Setter
     private int playersOnline;
 
+    @Getter @Setter
+    private int peakInGame;
+
     @JsonProperty(value = "steam_appid")
     @JsonIgnore
     private int steamAppId;
@@ -68,8 +71,8 @@ public class SteamAppDetailsResponse {
     @JsonIgnore
     private List<Integer> dlc;
 
-    @JsonProperty("capsule_image")
-    private String appImage;
+    @JsonProperty(value = "header_image")
+    private String headerImage;
   }
 
   public GameData getGameDataForApp(String appId) {

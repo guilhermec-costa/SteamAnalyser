@@ -2,6 +2,8 @@ package com.steam_analyser.analytics.api.presentation;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.Data;
 
 @Data
@@ -20,7 +22,9 @@ public class SteamMostPlayedGamesResponse {
     private int appid;
 
     private int last_week_rank;
-    private int peak_in_game;
+
+    @JsonProperty("peak_in_game")
+    private int peakInGame;
 
     public String getAppIdString() {
       return Integer.toString(appid);

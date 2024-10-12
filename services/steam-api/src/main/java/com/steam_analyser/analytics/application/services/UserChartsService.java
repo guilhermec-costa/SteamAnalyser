@@ -45,6 +45,7 @@ public class UserChartsService {
       GameData parsedAppGameData = parsedAppDetails.getGameDataForApp(appIdFromRank);
 
       parsedAppGameData.setPlayersOnline(playersCount);
+      parsedAppGameData.setPeakInGame(ranks.get(i).getPeakInGame());
       gamesData.add(parsedAppGameData);
     }
 
