@@ -1,11 +1,11 @@
-package com.steam_analyser.analytics.api.presentation.SteamCharts;
+package com.steam_analyser.analytics.api.presentation;
 
 import java.util.List;
 
 import lombok.Data;
 
 @Data
-public class SteamResponseDTO {
+public class SteamMostPlayedGamesResponse {
   private Response response;
 
   @Data

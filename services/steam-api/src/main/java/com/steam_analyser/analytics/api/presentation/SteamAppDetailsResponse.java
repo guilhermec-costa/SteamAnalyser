@@ -16,7 +16,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class AppDetailsResponse {
+public class SteamAppDetailsResponse {
 
 
   @JsonIgnoreProperties(ignoreUnknown = true)
@@ -50,6 +50,9 @@ public class AppDetailsResponse {
 
     private String name;
 
+    @Getter @Setter
+    private int playersOnline;
+
     @JsonProperty(value = "steam_appid")
     @JsonIgnore
     private int steamAppId;
@@ -68,4 +71,9 @@ public class AppDetailsResponse {
     @JsonProperty("capsule_image")
     private String appImage;
   }
+
+  public GameData getGameDataForApp(String appId) {
+    return getAdditionalProperties().get(appId).getData();
+  }
+
 }

@@ -6,7 +6,7 @@ import org.springframework.web.service.annotation.GetExchange;
 public interface WebSteamAPIClient {
 
   @GetExchange("ISteamUserStats/GetNumberOfCurrentPlayers/v1/")
-  public Object numberOfCurrentPlayersByApp(@RequestParam String key, @RequestParam Integer appid);
+  public String numberOfCurrentPlayersByApp(@RequestParam String key, @RequestParam String appid);
 
   @GetExchange("ISteamChartsService/GetMostPlayedGames/v1/")
   public String mostPlayedGames(@RequestParam String key);
