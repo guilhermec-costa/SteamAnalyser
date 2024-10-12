@@ -7,13 +7,20 @@ services:
     environment:
       POSTGRES_PASSWORD: postgres
       POSTGRES_USER: postgres
-      POSTGRES_DB: steam_analyser 
-      DB_PORT: 5434
+      POSTGRES_DB: steam-analyser 
+      DB_PORT: 5433
       DB_HOST: localhost
     ports:
-      - 5434:5432
+      - 5433:5432
     volumes:
       - pgdata:/var/lib/postgresql/data
+  
+  redis:
+    container_name: redis-steam-analyser
+    image: redis:latest
+    restart: always
+    ports:
+      - "6379:6379"
 
 volumes:
   pgdata:

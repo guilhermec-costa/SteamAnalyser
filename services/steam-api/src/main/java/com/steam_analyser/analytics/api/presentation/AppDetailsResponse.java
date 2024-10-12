@@ -10,6 +10,7 @@ import java.util.HashMap;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -43,17 +44,28 @@ public class AppDetailsResponse {
   @Setter
   @JsonIgnoreProperties(ignoreUnknown = true)
   public static class GameData {
+
+    @JsonIgnore
     private String type;
+
     private String name;
 
     @JsonProperty(value = "steam_appid")
+    @JsonIgnore
     private int steamAppId;
 
     @JsonProperty(value = "required_age")
+    @JsonIgnore
     private int requiredAge;
 
     @JsonProperty(value = "is_free")
+    @JsonIgnore
     private boolean isFree;
+
+    @JsonIgnore
     private List<Integer> dlc;
+
+    @JsonProperty("capsule_image")
+    private String appImage;
   }
 }

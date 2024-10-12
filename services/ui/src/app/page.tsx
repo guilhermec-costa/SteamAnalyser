@@ -1,13 +1,14 @@
 "use client"
 
 import Image from "next/image";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export default function Home() {
+  const [data, setData] = useState();
   const fetchData = async () => {
-    const result = await fetch("http://localhost:8080/user/stats?appId=730")
+    const result = await fetch("http://localhost:8080/steam/charts")
     const json = await result.json();
-    console.log(json);
+    setData(json);
   }
 
   useEffect(() => {
@@ -15,6 +16,10 @@ export default function Home() {
   }, [])
 
   return (
-    <div>hello world</div>
+    <div>
+      <p>
+        {JSON.stringify(data)}
+      </p>
+    </div>
   );
 }

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -30,13 +31,14 @@ public class SteamChartsController {
   private final SteamSecretsProperties steamSecrets;
   private final ObjectMapper objectMapper;
   
-  @GetMapping()
+  @GetMapping
+  @Cacheable("mostPlayed")
   public List<GameData> mostPlayedGames() throws Exception {
     var result = steamClient.mostPlayedGames(steamSecrets.getKey());
     SteamResponseDTO convertedResponse = objectMapper.readValue(result, SteamResponseDTO.class);
     List<Rank> ranks = convertedResponse.getResponse().getRanks();
     var gamesData = new ArrayList<GameData>();
-    for(int i = 0; i<5; i++) {
+    for(int i = 0; i<20; i++) {
         var appDetails = steamStoreclient.appDetails(ranks.get(i).getAppid());
         AppDetailsResponse parsedAppDetails = objectMapper.readValue(appDetails, AppDetailsResponse.class);
         gamesData.add(parsedAppDetails.getAdditionalProperties().get(ranks.get(i).getAppIdString()).getData());
