@@ -28,7 +28,7 @@ public class UserChartsService {
   private final UserStatsService userStatsService;
   private final ObjectMapper objectMapper;
 
-  private final int maxAppsForDashboard = 5;
+  private final int maxAppsForDashboard = 10;
 
   @Cacheable("mostPlayed")
   public List<GameData> genDashboardDataset() throws Exception {

@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
+import { roboto, inter } from "@/styles/fonts";
 import "./globals.css";
+
 
 export const metadata: Metadata = {
   title: "Steam Analyser",
@@ -13,7 +15,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={"antialiased"}>
+      <body className={`antialiased dark ${inter.className}`}>
         <header>header</header>
         {children}
       </body>
