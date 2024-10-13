@@ -1,6 +1,7 @@
 export interface MostPlayedResponse {
   name: string;
-  playersOnline: number;
-  peakInGame: number;
+  playersOnline: string;
+  steamAppId: number;
+  peakInGame: string;
   gameHeaderImage: string
 }

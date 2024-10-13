@@ -15,8 +15,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`antialiased dark ${inter.className}`}>
-        <header>header</header>
+      <body className={`antialiased dark ${roboto.className}`}>
         {children}
       </body>
     </html>

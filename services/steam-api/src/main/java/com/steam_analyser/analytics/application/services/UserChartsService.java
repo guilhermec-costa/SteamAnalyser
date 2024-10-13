@@ -39,13 +39,16 @@ public class UserChartsService {
     for(int i = 0; i<maxAppsForDashboard; i++) {
       String appIdFromRank = ranks.get(i).getAppIdString();
       SteamAppPlayerCountResponse appPlayerCountResponse = userStatsService.getNumberOfCurrentPlayersForApp(appIdFromRank);
-      int playersCount = appPlayerCountResponse.getPlayerCount();
+      String formmatedPlayersCount = Formmater.formatNumberUsingLocale(appPlayerCountResponse.getPlayerCount());
 
       SteamAppDetailsResponse parsedAppDetails = getDetailsForApp(appIdFromRank);
       GameData parsedAppGameData = parsedAppDetails.getGameDataForApp(appIdFromRank);
 
-      parsedAppGameData.setPlayersOnline(playersCount);
-      parsedAppGameData.setPeakInGame(ranks.get(i).getPeakInGame());
+      String peakInGame = Formmater.formatNumberUsingLocale((ranks.get(i).getPeakInGame()));
+
+      parsedAppGameData.setPlayersOnline(formmatedPlayersCount);
+      parsedAppGameData.setPlayersOnlineNumber(appPlayerCountResponse.getPlayerCount());
+      parsedAppGameData.setPeakInGame(peakInGame);
       gamesData.add(parsedAppGameData);
     }
 

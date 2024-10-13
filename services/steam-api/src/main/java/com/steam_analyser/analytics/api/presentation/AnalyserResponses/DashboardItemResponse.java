@@ -5,9 +5,11 @@ import lombok.Data;
 @Data
 public class DashboardItemResponse {
   
+  private int steamAppId;
   private String name;
-  private int playersOnline;
-  private int peakInGame;
+  private String playersOnline;
+  private int playersOnlineNumber;
+  private String peakInGame;
   private String gameHeaderImage;
 
 }

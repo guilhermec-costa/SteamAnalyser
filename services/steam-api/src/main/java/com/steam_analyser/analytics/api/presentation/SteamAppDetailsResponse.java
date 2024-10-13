@@ -51,13 +51,15 @@ public class SteamAppDetailsResponse {
     private String name;
 
     @Getter @Setter
-    private int playersOnline;
+    private String playersOnline;
 
     @Getter @Setter
-    private int peakInGame;
+    private int playersOnlineNumber;
+
+    @Getter @Setter
+    private String peakInGame;
 
     @JsonProperty(value = "steam_appid")
-    @JsonIgnore
     private int steamAppId;
 
     @JsonProperty(value = "required_age")

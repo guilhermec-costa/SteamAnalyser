@@ -9,9 +9,7 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import lombok.RequiredArgsConstructor;
+import java.time.Duration;
 
 @Configuration
 @EnableCaching
@@ -21,6 +19,7 @@ public class RedisCacheManagerConfig {
   public RedisCacheManager redisCacheManager(RedisConnectionFactory connectionFactory) {
     RedisCacheConfiguration cacheConfiguration = RedisCacheConfiguration.defaultCacheConfig()
       .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer()))
+      .entryTtl(Duration.ofMinutes(5))
       .disableCachingNullValues();
     
     return RedisCacheManager.builder(connectionFactory)
