@@ -28,7 +28,7 @@ public class UserChartsService {
   private final UserStatsService userStatsService;
   private final ObjectMapper objectMapper;
 
-  private final int maxAppsForDashboard = 10;
+  private final int maxAppsForDashboard = 20;
 
   @Cacheable("mostPlayed")
   public List<GameData> genDashboardDataset() throws Exception {
@@ -37,17 +37,20 @@ public class UserChartsService {
     var gamesData = new ArrayList<GameData>();
 
     for(int i = 0; i<maxAppsForDashboard; i++) {
-      String appIdFromRank = ranks.get(i).getAppIdString();
+      Rank nextRank = ranks.get(i);
+      String appIdFromRank = nextRank.getAppIdString();
       SteamAppPlayerCountResponse appPlayerCountResponse = userStatsService.getNumberOfCurrentPlayersForApp(appIdFromRank);
+      if(appPlayerCountResponse == null) continue;
       String formmatedPlayersCount = Formmater.formatNumberUsingLocale(appPlayerCountResponse.getPlayerCount());
 
       SteamAppDetailsResponse parsedAppDetails = getDetailsForApp(appIdFromRank);
       GameData parsedAppGameData = parsedAppDetails.getGameDataForApp(appIdFromRank);
 
-      String peakInGame = Formmater.formatNumberUsingLocale((ranks.get(i).getPeakInGame()));
+      String peakInGame = Formmater.formatNumberUsingLocale((nextRank.getPeakInGame()));
 
       parsedAppGameData.setPlayersOnline(formmatedPlayersCount);
       parsedAppGameData.setPlayersOnlineNumber(appPlayerCountResponse.getPlayerCount());
+      parsedAppGameData.setPeakInGameNumber(nextRank.getPeakInGame());
       parsedAppGameData.setPeakInGame(peakInGame);
       gamesData.add(parsedAppGameData);
     }

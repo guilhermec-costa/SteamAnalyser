@@ -9,6 +9,7 @@ public class DashboardItemResponse {
   private String name;
   private String playersOnline;
   private int playersOnlineNumber;
+  private int peakInGameNumber;
   private String peakInGame;
   private String gameHeaderImage;
 

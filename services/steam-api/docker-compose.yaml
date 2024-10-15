@@ -4,6 +4,7 @@ services:
   db:
     image: postgres
     restart: always
+    container_name: db-steam-analyser
     environment:
       POSTGRES_PASSWORD: postgres
       POSTGRES_USER: postgres

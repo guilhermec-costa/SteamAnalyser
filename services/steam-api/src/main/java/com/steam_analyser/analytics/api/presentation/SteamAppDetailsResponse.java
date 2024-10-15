@@ -57,6 +57,9 @@ public class SteamAppDetailsResponse {
     private int playersOnlineNumber;
 
     @Getter @Setter
+    private int peakInGameNumber;
+
+    @Getter @Setter
     private String peakInGame;
 
     @JsonProperty(value = "steam_appid")

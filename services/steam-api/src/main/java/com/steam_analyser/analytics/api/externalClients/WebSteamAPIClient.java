@@ -12,6 +12,6 @@ public interface WebSteamAPIClient {
   public String mostPlayedGames(@RequestParam String key);
 
   @GetExchange("ISteamApps/GetAppList/v2/")
-  public String infoFromApps(@RequestParam String key);
+  public String allApps(@RequestParam String key);
 
 }

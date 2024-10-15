@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
-public class ObjectMappingService {
+public class ModelMappingService {
  
   private final ModelMapper modelMapper;
 

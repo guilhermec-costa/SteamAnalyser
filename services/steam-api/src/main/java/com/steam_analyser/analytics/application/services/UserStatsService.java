@@ -20,8 +20,13 @@ public class UserStatsService {
   private final ObjectMapper objectMapper;
 
   public SteamAppPlayerCountResponse getNumberOfCurrentPlayersForApp(String appId) throws JsonProcessingException, JsonMappingException {
-    var appCurrentPlayersString = steamClient.numberOfCurrentPlayersByApp(steamSecrets.getKey(), appId);
-    SteamAppPlayerCountResponse appPlayerCountConverted = objectMapper.readValue(appCurrentPlayersString, SteamAppPlayerCountResponse.class);
-    return appPlayerCountConverted;
+    try {
+      var appCurrentPlayersString = steamClient.numberOfCurrentPlayersByApp(steamSecrets.getKey(), appId);
+      SteamAppPlayerCountResponse appPlayerCountConverted = objectMapper.readValue(appCurrentPlayersString, SteamAppPlayerCountResponse.class);
+      return appPlayerCountConverted;
+    } catch(Exception e) {
+      System.out.println(e.getMessage());
+      return null;
+    }
   }
 }

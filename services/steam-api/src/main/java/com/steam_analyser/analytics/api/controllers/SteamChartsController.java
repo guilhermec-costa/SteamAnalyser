@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.steam_analyser.analytics.api.presentation.AnalyserResponses.DashboardItemResponse;
 import com.steam_analyser.analytics.api.presentation.SteamAppDetailsResponse.GameData;
-import com.steam_analyser.analytics.application.services.ObjectMappingService;
+import com.steam_analyser.analytics.application.services.ModelMappingService;
 import com.steam_analyser.analytics.application.services.UserChartsService;
 import com.steam_analyser.analytics.infrastructure.util.DataUtilities;
 
@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 public class SteamChartsController {
   
   private final UserChartsService userChartsService; 
-  private final ObjectMappingService mappingService;
+  private final ModelMappingService mappingService;
   
   @GetMapping("mostPlayed")
   public ResponseEntity<List<DashboardItemResponse>> mostPlayedGames() throws Exception {

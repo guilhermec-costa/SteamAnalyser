@@ -8,10 +8,10 @@ app:
   app-name: steam-analyser
   api-info:
     title: Steam Analyser
-logging:
-  level:
-    '[org.springframework.web]': DEBUG
-    '[org.springframework.web.client.RestTemplate]': DEBUG
+# logging:
+#   level:
+#     '[org.springframework.web]': DEBUG
+#     '[org.springframework.web.client.RestTemplate]': DEBUG
 
 steam-config:
   key: 9669055485C21304526FA8DF39A065F7
