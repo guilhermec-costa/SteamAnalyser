@@ -1,4 +1,4 @@
-package com.steam_analyser.analytics.application.services;
+package com.steam_analyser.analytics.infrastructure.util;
 
 import java.text.NumberFormat;
 import java.util.Locale;

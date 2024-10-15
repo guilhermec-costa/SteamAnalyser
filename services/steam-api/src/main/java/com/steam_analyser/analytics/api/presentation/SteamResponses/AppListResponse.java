@@ -5,11 +5,13 @@ import java.util.List;
 
 import lombok.Data;
 
+@Data
 public class AppListResponse {
 
   @JsonProperty("applist")
   private AppsWrapper appsWrapper;
   
+  @Data
   public static class AppsWrapper {
 
     @JsonProperty("apps")
@@ -19,7 +21,7 @@ public class AppListResponse {
   @Data
   public static class App {
     @JsonProperty("appid")
-    private Long appId;
+    private Long externalAppId;
 
     @JsonProperty("name")
     private String name;

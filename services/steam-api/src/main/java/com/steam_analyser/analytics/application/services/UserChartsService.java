@@ -1,6 +1,5 @@
 package com.steam_analyser.analytics.application.services;
 
-import org.hibernate.internal.ExceptionConverterImpl;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +12,7 @@ import com.steam_analyser.analytics.api.presentation.SteamMostPlayedGamesRespons
 import com.steam_analyser.analytics.api.presentation.SteamAppDetailsResponse.GameData;
 import com.steam_analyser.analytics.api.presentation.SteamMostPlayedGamesResponse.Rank;
 import com.steam_analyser.analytics.infrastructure.config.SteamSecretsProperties;
+import com.steam_analyser.analytics.infrastructure.util.Formmater;
 
 import lombok.RequiredArgsConstructor;
 import java.util.List;

@@ -1,12 +1,10 @@
 package com.steam_analyser.analytics.application.services;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.steam_analyser.analytics.api.externalClients.WebSteamAPIClient;
 import com.steam_analyser.analytics.api.presentation.SteamResponses.AppListResponse;
-import com.steam_analyser.analytics.domain.entities.SteamApp;
 import com.steam_analyser.analytics.infrastructure.config.SteamSecretsProperties;
 
 import java.util.List;
