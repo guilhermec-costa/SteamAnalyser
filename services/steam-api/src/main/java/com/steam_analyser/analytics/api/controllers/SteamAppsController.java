@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.steam_analyser.analytics.api.presentation.SteamResponses.AppListResponse;
 import com.steam_analyser.analytics.application.services.SteamAppService;
+import com.steam_analyser.analytics.application.services.WebSteamAPIClientService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -15,11 +16,11 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("steamApps")
 public class SteamAppsController {
   
-  private final SteamAppService steamAppService;
+  private final WebSteamAPIClientService webSteamAPIClientService;
 
   @GetMapping("all")
   public ResponseEntity<AppListResponse> allAppsInformation() throws Exception {
-    var response = steamAppService.getAllApps();
+    var response = webSteamAPIClientService.getAllApps();
     return ResponseEntity.ok().body(response);
   }
 }

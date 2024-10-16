@@ -2,8 +2,9 @@ package com.steam_analyser.analytics.api.controllers;
 
 import org.springframework.web.bind.annotation.RestController;
 
-import com.steam_analyser.analytics.api.presentation.SteamAppPlayerCountResponse;
+import com.steam_analyser.analytics.application.schedulers.Synchronizer;
 import com.steam_analyser.analytics.application.services.UserStatsService;
+import com.steam_analyser.analytics.application.services.WebSteamAPIClientService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -17,11 +18,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequestMapping("userStats")
 public class UserStatsController {
 
-  private final UserStatsService userStatsService;
+  private final WebSteamAPIClientService webSteamAPIClientService;
+  private final Synchronizer synchronizer;
   
   @GetMapping("currentPlayers")
-  public ResponseEntity<SteamAppPlayerCountResponse> numberOfCurrentPlayersByApp(@RequestParam String appId) throws Exception {
-    SteamAppPlayerCountResponse response = userStatsService.getNumberOfCurrentPlayersForApp(appId);
+  public ResponseEntity<Integer> numberOfCurrentPlayersByApp(@RequestParam String appId) throws Exception {
+    Integer response = webSteamAPIClientService.getNumberOfCurrentPlayersForApp(appId);
+    synchronizer.synchronizeAppStats();
     return ResponseEntity.ok().body(response);
   }
 }
