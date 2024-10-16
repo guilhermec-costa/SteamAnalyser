@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.steam_analyser.analytics.api.presentation.SteamResponses.AppListResponse;
-import com.steam_analyser.analytics.application.services.SteamAppService;
 import com.steam_analyser.analytics.application.services.WebSteamAPIClientService;
 
 import lombok.RequiredArgsConstructor;
