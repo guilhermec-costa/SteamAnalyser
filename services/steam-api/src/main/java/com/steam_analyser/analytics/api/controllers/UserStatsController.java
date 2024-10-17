@@ -3,7 +3,6 @@ package com.steam_analyser.analytics.api.controllers;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.steam_analyser.analytics.application.schedulers.Synchronizer;
-import com.steam_analyser.analytics.application.services.SteamAppStatsService;
 import com.steam_analyser.analytics.application.services.WebSteamAPIClientService;
 
 import lombok.RequiredArgsConstructor;

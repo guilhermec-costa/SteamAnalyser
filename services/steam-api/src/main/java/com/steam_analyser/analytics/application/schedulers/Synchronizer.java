@@ -12,7 +12,6 @@ import com.steam_analyser.analytics.application.services.SteamAppStatsService;
 import com.steam_analyser.analytics.application.services.WebSteamAPIClientService;
 import com.steam_analyser.analytics.domain.entities.SteamApp;
 import com.steam_analyser.analytics.domain.entities.SteamAppStats;
-import com.steam_analyser.analytics.domain.repositoryInterfaces.SteamAppRepository;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
