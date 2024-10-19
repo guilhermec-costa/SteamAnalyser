@@ -1,4 +1,4 @@
-package com.steam_analyser.analytics.domain.entities;
+package com.steam_analyser.analytics.models;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -12,7 +12,7 @@ import lombok.Data;
 @Builder
 @Entity
 @Table
-public class SteamAppStats extends BaseEntity {
+public class SteamAppStatsModel extends BaseModel {
  
   @Column
   private Integer currentPlayers;
@@ -22,5 +22,5 @@ public class SteamAppStats extends BaseEntity {
 
   @OneToOne
   @JoinColumn(name = "steam_app_id")
-  private SteamApp steamApp;
+  private SteamAppModel steamApp;
 }

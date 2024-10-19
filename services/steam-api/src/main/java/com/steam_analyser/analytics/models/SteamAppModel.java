@@ -1,4 +1,4 @@
-package com.steam_analyser.analytics.domain.entities;
+package com.steam_analyser.analytics.models;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -10,7 +10,7 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "steam_app")
-public class SteamApp extends BaseEntity {
+public class SteamAppModel extends BaseModel {
   
   @Column
   private String name;

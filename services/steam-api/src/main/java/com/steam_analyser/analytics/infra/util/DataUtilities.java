@@ -1,4 +1,4 @@
-package com.steam_analyser.analytics.infrastructure.util;
+package com.steam_analyser.analytics.infra.util;
 
 import java.util.List;
 import java.lang.reflect.Field;

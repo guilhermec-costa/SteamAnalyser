@@ -1,4 +1,4 @@
-package com.steam_analyser.analytics.api.controllers;
+package com.steam_analyser.analytics.api.httpHandlers;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

@@ -1,4 +1,4 @@
-package com.steam_analyser.analytics.api.controllers;
+package com.steam_analyser.analytics.api.httpHandlers;
 
 import java.util.List;
 
@@ -11,7 +11,7 @@ import com.steam_analyser.analytics.api.presentation.AnalyserResponses.Dashboard
 import com.steam_analyser.analytics.api.presentation.SteamAppDetailsResponse.GameData;
 import com.steam_analyser.analytics.application.services.ModelMappingService;
 import com.steam_analyser.analytics.application.services.UserChartsService;
-import com.steam_analyser.analytics.infrastructure.util.DataUtilities;
+import com.steam_analyser.analytics.infra.util.DataUtilities;
 
 import lombok.RequiredArgsConstructor;
 

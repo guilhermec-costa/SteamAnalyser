@@ -2,8 +2,8 @@ package com.steam_analyser.analytics.application.services;
 
 import org.springframework.stereotype.Service;
 
-import com.steam_analyser.analytics.domain.entities.SteamApp;
-import com.steam_analyser.analytics.domain.repositoryInterfaces.SteamAppRepository;
+import com.steam_analyser.analytics.infra.dataAccessors.SteamAppAccessor;
+import com.steam_analyser.analytics.models.SteamAppModel;
 
 import java.util.List;
 
@@ -13,17 +13,17 @@ import lombok.RequiredArgsConstructor;
 @Service
 public class SteamAppService {
 
-  private final SteamAppRepository steamAppRepository;
+  private final SteamAppAccessor steamAppRepository;
 
-  public List<SteamApp> getAllSteamApps() {
+  public List<SteamAppModel> getAllSteamApps() {
     return steamAppRepository.findAll();
   }
 
-  public void saveApps(List<SteamApp> appsToSave) {
+  public void saveApps(List<SteamAppModel> appsToSave) {
     steamAppRepository.saveAll(appsToSave);
   }
 
-  public SteamApp findAppById(String appId) {
+  public SteamAppModel findAppById(String appId) {
     return steamAppRepository.findById(Long.parseLong(appId))
       .orElseThrow();
   }

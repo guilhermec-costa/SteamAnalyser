@@ -11,7 +11,7 @@ import com.steam_analyser.analytics.api.presentation.SteamAppDetailsResponse;
 import com.steam_analyser.analytics.api.presentation.SteamAppPlayerCountResponse;
 import com.steam_analyser.analytics.api.presentation.SteamMostPlayedGamesResponse;
 import com.steam_analyser.analytics.api.presentation.SteamResponses.AppListResponse;
-import com.steam_analyser.analytics.infrastructure.config.SteamSecretsProperties;
+import com.steam_analyser.analytics.infra.config.SteamSecretsProperties;
 
 import lombok.RequiredArgsConstructor;
 

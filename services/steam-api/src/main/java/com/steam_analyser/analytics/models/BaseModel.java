@@ -1,4 +1,4 @@
-package com.steam_analyser.analytics.domain.entities;
+package com.steam_analyser.analytics.models;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 
 @Data
 @MappedSuperclass
-public abstract class BaseEntity {
+public abstract class BaseModel {
   
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

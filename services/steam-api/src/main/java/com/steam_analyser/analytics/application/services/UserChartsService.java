@@ -7,7 +7,7 @@ import com.steam_analyser.analytics.api.presentation.SteamAppDetailsResponse;
 import com.steam_analyser.analytics.api.presentation.SteamMostPlayedGamesResponse;
 import com.steam_analyser.analytics.api.presentation.SteamAppDetailsResponse.GameData;
 import com.steam_analyser.analytics.api.presentation.SteamMostPlayedGamesResponse.Rank;
-import com.steam_analyser.analytics.infrastructure.util.Formmater;
+import com.steam_analyser.analytics.infra.util.Formmater;
 
 import lombok.RequiredArgsConstructor;
 import java.util.List;

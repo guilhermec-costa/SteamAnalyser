@@ -1,4 +1,4 @@
-package com.steam_analyser.analytics.infrastructure.config;
+package com.steam_analyser.analytics.infra.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
