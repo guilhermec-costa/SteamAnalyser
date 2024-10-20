@@ -21,6 +21,7 @@ import lombok.Setter;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.Map;
 import java.util.HashMap;
@@ -52,45 +53,23 @@ public class UpdateCurrentPlayersChron implements ISteamChron {
     enableToRun = true;
   }
 
-  @Scheduled(fixedRate = 30000, initialDelay = 150)
+  @Scheduled(fixedRate = 10000, initialDelay = 150)
   public void run() {
     if (!enableToRun)
       return;
 
-    PlayerCountUpdatedArgument countUpdateEventsArgument;
+    List<PlayerCountUpdatedArgument> eventsArguments = new ArrayList<>();
     currentExecutionTime = getExecutionTime();
 
-    List<SteamAppModel> localSteamApps = steamAppService.findNSteamApps(PageRequest.of(0, 500));
+    List<SteamAppModel> localSteamApps = steamAppService.findNSteamApps(PageRequest.of(0, 5));
     for (SteamAppModel nextApp : localSteamApps) {
-      Long localAppId = nextApp.getId();
-      String steamAppId = nextApp.getSteamAppId();
-      SteamAppStatsModel actUponAppStats;
-
-      Optional<SteamAppStatsModel> localAppStatsRegister = steamAppStatsService.findAppStatsByAppRegisterId(localAppId);
-      if (localAppStatsRegister.isEmpty())
-        actUponAppStats = SteamAppStatsModel.builder().steamApp(nextApp).build();
-      else
-        actUponAppStats = localAppStatsRegister.get();
-
-      try {
-        Map<String, String> args = new HashMap<>();
-        args.put("appid", steamAppId);
-
-        var currentPlayersResponse = steamConfiguration.getWebAPI(ISteamUserStats.string).call(
-            GetNumberOfCurrentPlayers.string,
-            GetNumberOfCurrentPlayers.version, args);
-
-        Integer playerCount = extractPlayerCountingFromResponse(currentPlayersResponse);
-        actUponAppStats.setCurrentPlayers(playerCount);
-
-        steamAppStatsService.save(actUponAppStats);
-      } catch (IOException e) {
-        System.out.println(e.getMessage());
-      }
+      SteamAppStatsModel actUponAppStats = findOrCreateStatsModelInstance(nextApp);
+      Integer playerCount = queryPlayerCountForApp(nextApp.getSteamAppId());
+      eventsArguments.add(new PlayerCountUpdatedArgument(nextApp.getSteamAppId(), playerCount, LocalDateTime.now()));
+      steamAppStatsService.save(actUponAppStats);
     }
 
-    PlayerCountUpdatedEvent updateCountEvent = new PlayerCountUpdatedEvent(getChronName(), 0, currentExecutionTime);
-    Mediator.publish(updateCountEvent); 
+    propateSideEffects(eventsArguments);
   }
 
   private Integer extractPlayerCountingFromResponse(KeyValue res) {
@@ -102,5 +81,31 @@ public class UpdateCurrentPlayersChron implements ISteamChron {
   public String getChronName() {
     var thisClass = this.getClass();
     return thisClass.getName();
+  }
+
+  private SteamAppStatsModel findOrCreateStatsModelInstance(SteamAppModel app) {
+    return steamAppStatsService.findAppStatsByAppRegisterId(app.getId())
+        .orElse(SteamAppStatsModel.builder().steamApp(app).build());
+  }
+
+  private Integer queryPlayerCountForApp(String steamAppId) {
+    try {
+      Map<String, String> args = new HashMap<>();
+      args.put("appid", steamAppId);
+
+      var currentPlayersResponse = steamConfiguration.getWebAPI(ISteamUserStats.string).call(
+          GetNumberOfCurrentPlayers.string,
+          GetNumberOfCurrentPlayers.version, args);
+
+      return extractPlayerCountingFromResponse(currentPlayersResponse);
+    } catch (IOException e) {
+      System.out.println(e.getMessage());
+      return null;
+    }
+  }
+
+  private void propateSideEffects(List<PlayerCountUpdatedArgument> eventArgs) {
+    PlayerCountUpdatedEvent updateCountEvent = new PlayerCountUpdatedEvent(eventArgs);
+    Mediator.publish(updateCountEvent);
   }
 }

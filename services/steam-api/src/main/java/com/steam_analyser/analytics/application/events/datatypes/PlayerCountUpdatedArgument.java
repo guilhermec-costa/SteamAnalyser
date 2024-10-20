@@ -12,6 +12,6 @@ import java.time.LocalDateTime;
 public class PlayerCountUpdatedArgument {
   
   private final String steamAppId;
-  private final int count;
+  private final Integer count;
   private final LocalDateTime moment;
 }
