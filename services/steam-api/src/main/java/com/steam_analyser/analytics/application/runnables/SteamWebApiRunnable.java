@@ -29,8 +29,13 @@ import java.util.Collections;
 import java.util.Scanner;
 import java.util.concurrent.CancellationException;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.steam_analyser.analytics.application.chrons.ISteamChron;
 import com.steam_analyser.analytics.application.chrons.UpdateUserStatChron;
 import com.steam_analyser.analytics.infra.config.SteamSecretsProperties;
+
+import java.util.List;
 
 public class SteamWebApiRunnable implements Runnable {
 
@@ -43,12 +48,14 @@ public class SteamWebApiRunnable implements Runnable {
   private String previouslyStoredGuardData;
   private String authToken;
   private Scanner scanner;
+  private List<ISteamChron> futureChrons;
 
-  public SteamWebApiRunnable(SteamSecretsProperties steamSecrets) {
+  public SteamWebApiRunnable(SteamSecretsProperties steamSecrets, List<ISteamChron> steamChrons) {
     this.username = steamSecrets.getUsername();
     this.password = steamSecrets.getPassword();
     this.scanner = new Scanner(System.in);
     this.authToken = loadGuardData();
+    futureChrons = steamChrons;
   }
 
   static class MyListener implements LogListener {
@@ -162,7 +169,10 @@ public class SteamWebApiRunnable implements Runnable {
     }
 
     System.out.println("Successfully logged on!");
-    UpdateUserStatChron.start(steamClient.getConfiguration());
+    var steamConfiguration = steamClient.getConfiguration();
+    for(var chron : futureChrons) {
+      chron.start(steamConfiguration);
+    }
   }
 
   private void onLoggedOff(LoggedOffCallback callback) {
@@ -196,18 +206,5 @@ public class SteamWebApiRunnable implements Runnable {
     }
 
     steamUser.logOff();
-  }
-
-  private void printKeyValue(KeyValue keyValue, int depth) {
-    String spacePadding = String.join("", Collections.nCopies(depth, "    "));
-
-    if (keyValue.getChildren().isEmpty()) {
-      System.out.println(spacePadding + keyValue.getName() + ": " + keyValue.getValue());
-    } else {
-      System.out.println(spacePadding + keyValue.getName() + ":");
-      for (KeyValue child : keyValue.getChildren()) {
-        printKeyValue(child, depth + 1);
-      }
-    }
   }
 }
