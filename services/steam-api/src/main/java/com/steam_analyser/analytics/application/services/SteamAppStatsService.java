@@ -13,13 +13,13 @@ import lombok.RequiredArgsConstructor;
 @Service
 public class SteamAppStatsService {
 
-  private final SteamAppStatsAccessor steamAppStatsRepository;
+  private final SteamAppStatsAccessor steamAppStatsAccessor;
 
-  public Optional<SteamAppStatsModel> findAppStatsByAppId(String appId) {
-    return steamAppStatsRepository.findById(Long.parseLong(appId));
+  public Optional<SteamAppStatsModel> findAppStatsByAppRegisterId(Long localSteamAppId) {
+    return steamAppStatsAccessor.findBySteamAppId(localSteamAppId);
   }
 
   public SteamAppStatsModel save(SteamAppStatsModel appStat) {
-    return steamAppStatsRepository.save(appStat);
+    return steamAppStatsAccessor.save(appStat);
   }
 }

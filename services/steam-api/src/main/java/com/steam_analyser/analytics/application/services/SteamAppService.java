@@ -1,5 +1,6 @@
 package com.steam_analyser.analytics.application.services;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.steam_analyser.analytics.infra.dataAccessors.SteamAppAccessor;
@@ -13,18 +14,22 @@ import lombok.RequiredArgsConstructor;
 @Service
 public class SteamAppService {
 
-  private final SteamAppAccessor steamAppRepository;
+  private final SteamAppAccessor steamAppAccessor;
 
-  public List<SteamAppModel> getAllSteamApps() {
-    return steamAppRepository.findAll();
+  public List<SteamAppModel> findAllSteamApps() {
+    return steamAppAccessor.findAll();
+  }
+
+  public List<SteamAppModel> findNSteamApps(Pageable pageable) {
+    return steamAppAccessor.findNElements(pageable);
   }
 
   public void saveApps(List<SteamAppModel> appsToSave) {
-    steamAppRepository.saveAll(appsToSave);
+    steamAppAccessor.saveAll(appsToSave);
   }
 
   public SteamAppModel findAppById(String appId) {
-    return steamAppRepository.findById(Long.parseLong(appId))
+    return steamAppAccessor.findById(Long.parseLong(appId))
       .orElseThrow();
   }
 }

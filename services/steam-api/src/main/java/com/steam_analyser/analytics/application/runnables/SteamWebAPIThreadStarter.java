@@ -1,12 +1,10 @@
 package com.steam_analyser.analytics.application.runnables;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
 import com.steam_analyser.analytics.application.chrons.ISteamChron;
-import com.steam_analyser.analytics.application.chrons.UpdateUserStatChron;
 import com.steam_analyser.analytics.infra.config.SteamSecretsProperties;
 
 import in.dragonbra.javasteam.util.log.DefaultLogListener;
@@ -20,7 +18,6 @@ public class SteamWebAPIThreadStarter implements ApplicationRunner {
 
   private final SteamSecretsProperties steamSecretsProperties;
   private final List<ISteamChron> steamChrons;
-  // private final UpdateUserStatChron updateUserStatChron;
   private Thread webApiThread;
 
   @Override

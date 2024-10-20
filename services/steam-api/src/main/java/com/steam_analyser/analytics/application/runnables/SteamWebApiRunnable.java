@@ -15,24 +15,16 @@ import in.dragonbra.javasteam.steam.steamclient.callbackmgr.CallbackManager;
 import in.dragonbra.javasteam.steam.steamclient.callbacks.ConnectedCallback;
 import in.dragonbra.javasteam.steam.steamclient.callbacks.DisconnectedCallback;
 import in.dragonbra.javasteam.steam.steamclient.configuration.SteamConfiguration;
-import in.dragonbra.javasteam.steam.webapi.WebAPI;
-import in.dragonbra.javasteam.types.KeyValue;
 import in.dragonbra.javasteam.util.log.LogListener;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Collections;
 import java.util.Scanner;
 import java.util.concurrent.CancellationException;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.steam_analyser.analytics.application.chrons.ISteamChron;
-import com.steam_analyser.analytics.application.chrons.UpdateUserStatChron;
 import com.steam_analyser.analytics.infra.config.SteamSecretsProperties;
 
 import java.util.List;
@@ -171,7 +163,7 @@ public class SteamWebApiRunnable implements Runnable {
     System.out.println("Successfully logged on!");
     var steamConfiguration = steamClient.getConfiguration();
     for(var chron : futureChrons) {
-      chron.start(steamConfiguration);
+      chron.makeSchedulable(steamConfiguration);
     }
   }
 
