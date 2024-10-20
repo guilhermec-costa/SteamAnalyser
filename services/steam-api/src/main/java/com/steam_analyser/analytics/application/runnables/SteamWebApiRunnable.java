@@ -24,6 +24,9 @@ import java.io.IOException;
 import java.util.Scanner;
 import java.util.concurrent.CancellationException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.steam_analyser.analytics.application.chrons.ISteamChron;
 import com.steam_analyser.analytics.infra.config.SteamSecretsProperties;
 
@@ -41,6 +44,7 @@ public class SteamWebApiRunnable implements Runnable {
   private String authToken;
   private Scanner scanner;
   private List<ISteamChron> futureChrons;
+  private Logger logger = LoggerFactory.getLogger(getClass());
 
   public SteamWebApiRunnable(SteamSecretsProperties steamSecrets, List<ISteamChron> steamChrons) {
     this.username = steamSecrets.getUsername();
@@ -81,7 +85,7 @@ public class SteamWebApiRunnable implements Runnable {
 
     isExecuting = true;
 
-    System.out.println("Connecting to steam client");
+    logger.info("Connecting to steam client...");
 
     steamClient.connect();
 
@@ -93,13 +97,13 @@ public class SteamWebApiRunnable implements Runnable {
   }
 
   private void onConnected(ConnectedCallback callback) {
-    System.out.println("Connected to Steam!");
+    logger.info("Connected to Steam Client");
 
     if (authToken != null && !authToken.isEmpty()) {
-      System.out.println("Using stored auth token...");
+      logger.info("Using stored auth token");
       logOnWithToken(authToken);
     } else {
-      System.out.println("Logging in with username and password...");
+      logger.info("Loggin in with username and password");
       authenticateWithCredentials();
     }
   }
@@ -140,6 +144,7 @@ public class SteamWebApiRunnable implements Runnable {
 
   private void onDisconnected(DisconnectedCallback callback) {
     System.out.println("Disconnected from Steam servers");
+    logger.info("Disconnected from Steam Servers");
 
     if (callback.isUserInitiated()) {
       isExecuting = false;
@@ -148,27 +153,29 @@ public class SteamWebApiRunnable implements Runnable {
         Thread.sleep(2000L);
         steamClient.connect();
       } catch (InterruptedException e) {
-        System.err.println("An Interrupted exception occurred. " + e.getMessage());
+        logger.error("An Interrupted exception occurred. " + e.getMessage());
       }
     }
   }
 
   private void onLoggedOn(LoggedOnCallback callback) {
     if (callback.getResult() != EResult.OK) {
-      System.out.println("Unable to logon to Steam: " + callback.getResult() + " / " + callback.getExtendedResult());
+      logger.error("Unable to logon to Steam: " + callback.getResult() + " / " + callback.getExtendedResult());
       isExecuting = false;
       return;
     }
 
-    System.out.println("Successfully logged on!");
+    logger.info("Successfully logged on!");
     var steamConfiguration = steamClient.getConfiguration();
-    for(var chron : futureChrons) {
-      chron.makeSchedulable(steamConfiguration);
+
+    logger.info("Starting chron jobs");
+    for (var chron : futureChrons) {
+      chron.start(steamConfiguration);
     }
   }
 
   private void onLoggedOff(LoggedOffCallback callback) {
-    System.out.println("Logged off of Steam: " + callback.getResult());
+    logger.info("Logged off of Steam: " + callback.getResult());
     isExecuting = false;
   }
 
@@ -190,11 +197,11 @@ public class SteamWebApiRunnable implements Runnable {
 
   private void handleAuthenticationException(Exception e) {
     if (e instanceof AuthenticationException) {
-      System.err.println("An Authentication error has occurred. " + e.getMessage());
+      logger.error("An Authentication error has occurred. " + e.getMessage());
     } else if (e instanceof CancellationException) {
-      System.err.println("An Cancellation exception was raised. Usually means a timeout occurred. " + e.getMessage());
+      logger.error("An Cancellation exception was raised. Usually means a timeout occurred. " + e.getMessage());
     } else {
-      System.err.println("An error occurred:" + e.getMessage());
+      logger.error("An error occurred:" + e.getMessage());
     }
 
     steamUser.logOff();
