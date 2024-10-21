@@ -1,5 +1,6 @@
 package com.steam_analyser.analytics.models;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
@@ -21,7 +22,7 @@ import java.time.LocalDateTime;
 @Table(name = "steam_app_stats_history")
 public class SteamAppStatsHistoryModel extends BaseModel {
  
-  @OneToOne
+  @OneToOne(cascade = CascadeType.REMOVE)
   @JoinColumn(name = "steam_app_id", unique = false)
   private SteamAppModel steamApp;
 

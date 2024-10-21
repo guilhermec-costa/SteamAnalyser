@@ -1,5 +1,6 @@
 package com.steam_analyser.analytics.models;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
@@ -26,7 +27,11 @@ public class SteamAppStatsModel extends BaseModel {
   @Column
   private Integer _24hpeak;
 
-  @OneToOne
+  @OneToOne(cascade = CascadeType.REMOVE)
   @JoinColumn(name = "steam_app_id")
   private SteamAppModel steamApp;
+
+  public void updateCurrentPlayers(Integer playerCount) {
+    this.currentPlayers = playerCount;
+  }
 }
