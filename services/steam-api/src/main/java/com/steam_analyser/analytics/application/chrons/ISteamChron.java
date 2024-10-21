@@ -7,7 +7,7 @@ public interface ISteamChron {
   
   void start(final SteamConfiguration theSteamConfiguration);
   String getChronName();
-  default LocalDateTime getExecutionTime() {
+  default LocalDateTime getExecutionDate() {
     return LocalDateTime.now();
   };
   void run();

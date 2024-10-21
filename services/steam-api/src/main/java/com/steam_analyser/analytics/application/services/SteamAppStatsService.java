@@ -1,6 +1,7 @@
 package com.steam_analyser.analytics.application.services;
 
 import java.util.Optional;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 
@@ -27,5 +28,9 @@ public class SteamAppStatsService {
   public SteamAppStatsModel findOrCreateStatsModelInstance(SteamAppModel app) {
     return findAppStatsByAppRegisterId(app.getId())
         .orElse(SteamAppStatsModel.builder().steamApp(app).build());
+  }
+
+  public void saveMultiple(List<SteamAppStatsModel> list) {
+    steamAppStatsAccessor.saveAll(list);
   }
 }

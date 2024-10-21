@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -26,7 +27,12 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.stream.Collectors;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.time.LocalDateTime;
+import java.lang.Math;
 
 import static com.steam_analyser.analytics.api.SteamRouteInterfaces.*;
 import static com.steam_analyser.analytics.api.SteamRouteMethods.*;
@@ -39,39 +45,46 @@ public class UpdateCurrentPlayersChron implements ISteamChron {
   private final SteamAppService steamAppService;
   private final SteamAppStatsService steamAppStatsService;
   private final Mediator mediator;
+  private final TaskScheduler taskScheduler;
   private SteamConfiguration steamConfiguration;
-  private boolean enableToRun = false;
-  private final int executionFrequency = 30000;
+  private final int executionFrequency = 15000;
 
-  @Setter
-  private LocalDateTime currentExecutionTime;
-
+  @SuppressWarnings("deprecation")
   public void start(final SteamConfiguration theSteamConfiguration) {
     steamConfiguration = theSteamConfiguration;
-    enableToRun = true;
+    taskScheduler.scheduleAtFixedRate(this::run, executionFrequency);
     log.info("Executing task: \"" + getChronName() + "\"");
   }
 
   @Override
-  @Scheduled(fixedRate = executionFrequency)
   public void run() {
-    if (!enableToRun)
-      return;
+    var steamAppsList = steamAppService.findAllSteamApps();
+    var batches = partitionList(steamAppsList, processBatchSizeFor(steamAppsList));
+    List<CompletableFuture<Void>> futures = batches.stream()
+        .map(this::processBatchParallely)
+        .collect(Collectors.toList());
 
-    List<PlayerCountUpdatedArgument> toBePropagated = new ArrayList<>();
-    currentExecutionTime = getExecutionTime();
+    CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+  }
 
-    List<SteamAppModel> localSteamApps = steamAppService.findNSteamApps(PageRequest.of(0, 100));
-    for (SteamAppModel nextApp : localSteamApps) {
-      SteamAppStatsModel actUponAppStats = steamAppStatsService.findOrCreateStatsModelInstance(nextApp);
-      Integer playerCount = queryPlayerCountForApp(nextApp.getSteamAppId());
-      actUponAppStats.updateCurrentPlayers(playerCount);
-      steamAppStatsService.save(actUponAppStats);
+  private CompletableFuture<Void> processBatchParallely(List<SteamAppModel> batch) {
+    ExecutorService executor = Executors.newFixedThreadPool(10);
 
-      toBePropagated.add(new PlayerCountUpdatedArgument(nextApp, playerCount, LocalDateTime.now()));
-    }
+    return CompletableFuture.runAsync(() -> {
+      List<PlayerCountUpdatedArgument> toBePropagated = new ArrayList<>();
+      List<SteamAppStatsModel> statsToSave = new ArrayList<>();
 
-    propagateSideEffects(toBePropagated);
+      for (var nextApp : batch) {
+        SteamAppStatsModel actUponAppStats = steamAppStatsService.findOrCreateStatsModelInstance(nextApp);
+        Integer playerCount = queryPlayerCountForApp(nextApp.getSteamAppId());
+        actUponAppStats.updateCurrentPlayers(playerCount);
+        statsToSave.add(actUponAppStats);
+        toBePropagated.add(new PlayerCountUpdatedArgument(nextApp, playerCount, getExecutionDate()));
+      }
+
+      steamAppStatsService.saveMultiple(statsToSave);
+      propagateSideEffects(toBePropagated);
+    }, executor);
   }
 
   private Integer extractPlayerCountingFromResponse(KeyValue res) {
@@ -104,5 +117,21 @@ public class UpdateCurrentPlayersChron implements ISteamChron {
   private void propagateSideEffects(List<PlayerCountUpdatedArgument> eventArgs) {
     PlayerCountUpdatedEvent updateCountEvent = new PlayerCountUpdatedEvent(eventArgs);
     mediator.publish(updateCountEvent);
+  }
+
+  private <T> int processBatchSizeFor(List<T> items) {
+    return 500;
+  }
+
+  private <T> List<List<T>> partitionList(List<T> list, int batchSize) {
+    var partionContainer = new ArrayList<List<T>>();
+    int itemsCount = list.size();
+
+    for (int i = 0; i < itemsCount; i += batchSize) {
+      int nextPartionLimit = Math.min(i + batchSize, itemsCount);
+      var singlePartion = list.subList(i, nextPartionLimit);
+      partionContainer.add(singlePartion);
+    }
+    return partionContainer;
   }
 }
