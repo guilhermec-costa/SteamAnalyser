@@ -1,6 +1,8 @@
 package com.steam_analyser.analytics.application.chrons;
 
 import org.hibernate.annotations.DialectOverride.OverridesAnnotation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -48,28 +50,33 @@ public class UpdateCurrentPlayersChron implements ISteamChron {
   @Autowired
   private Mediator Mediator;
 
+  private final Logger logger = LoggerFactory.getLogger(getClass());
+
   public void start(final SteamConfiguration theSteamConfiguration) {
     steamConfiguration = theSteamConfiguration;
     enableToRun = true;
   }
 
-  @Scheduled(fixedRate = 10000, initialDelay = 150)
+  @Scheduled(fixedRate = 30000)
   public void run() {
     if (!enableToRun)
       return;
 
+    logger.info("Begging UpdateCurrentPlayersChron");
     List<PlayerCountUpdatedArgument> eventsArguments = new ArrayList<>();
     currentExecutionTime = getExecutionTime();
 
-    List<SteamAppModel> localSteamApps = steamAppService.findNSteamApps(PageRequest.of(0, 5));
+    List<SteamAppModel> localSteamApps = steamAppService.findNSteamApps(PageRequest.of(0, 100));
     for (SteamAppModel nextApp : localSteamApps) {
       SteamAppStatsModel actUponAppStats = findOrCreateStatsModelInstance(nextApp);
       Integer playerCount = queryPlayerCountForApp(nextApp.getSteamAppId());
-      eventsArguments.add(new PlayerCountUpdatedArgument(nextApp.getSteamAppId(), playerCount, LocalDateTime.now()));
+      actUponAppStats.setCurrentPlayers(playerCount);
       steamAppStatsService.save(actUponAppStats);
+
+      eventsArguments.add(new PlayerCountUpdatedArgument(nextApp, playerCount, LocalDateTime.now()));
     }
 
-    propateSideEffects(eventsArguments);
+    propagateSideEffects(eventsArguments);
   }
 
   private Integer extractPlayerCountingFromResponse(KeyValue res) {
@@ -104,7 +111,7 @@ public class UpdateCurrentPlayersChron implements ISteamChron {
     }
   }
 
-  private void propateSideEffects(List<PlayerCountUpdatedArgument> eventArgs) {
+  private void propagateSideEffects(List<PlayerCountUpdatedArgument> eventArgs) {
     PlayerCountUpdatedEvent updateCountEvent = new PlayerCountUpdatedEvent(eventArgs);
     Mediator.publish(updateCountEvent);
   }

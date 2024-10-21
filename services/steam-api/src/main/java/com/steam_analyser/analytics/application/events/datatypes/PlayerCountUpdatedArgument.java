@@ -6,12 +6,14 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 
+import com.steam_analyser.analytics.models.SteamAppModel;
+
 @RequiredArgsConstructor
 @Getter
 @Setter
 public class PlayerCountUpdatedArgument {
   
-  private final String steamAppId;
+  private final SteamAppModel steamApp;
   private final Integer count;
-  private final LocalDateTime moment;
+  private final LocalDateTime snapshoted_at;
 }
