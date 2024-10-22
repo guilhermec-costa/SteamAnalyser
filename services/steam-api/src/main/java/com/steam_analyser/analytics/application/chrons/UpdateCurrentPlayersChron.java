@@ -7,6 +7,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.steam_analyser.analytics.application.events.PlayerCountUpdatedEvent;
 import com.steam_analyser.analytics.application.events.datatypes.PlayerCountUpdatedArgument;
@@ -47,7 +48,7 @@ public class UpdateCurrentPlayersChron implements ISteamChron {
   private final Mediator mediator;
   private final TaskScheduler taskScheduler;
   private SteamConfiguration steamConfiguration;
-  private final int executionFrequency = 15000;
+  private final int executionFrequency = 900_000;
 
   @SuppressWarnings("deprecation")
   public void start(final SteamConfiguration theSteamConfiguration) {
@@ -68,7 +69,7 @@ public class UpdateCurrentPlayersChron implements ISteamChron {
   }
 
   private CompletableFuture<Void> processBatchParallely(List<SteamAppModel> batch) {
-    ExecutorService executor = Executors.newFixedThreadPool(10);
+    ExecutorService executor = Executors.newFixedThreadPool(3);
 
     return CompletableFuture.runAsync(() -> {
       List<PlayerCountUpdatedArgument> toBePropagated = new ArrayList<>();
@@ -109,7 +110,8 @@ public class UpdateCurrentPlayersChron implements ISteamChron {
 
       return extractPlayerCountingFromResponse(currentPlayersResponse);
     } catch (IOException e) {
-      log.error(e.getMessage());
+      // log.error(e.getLocalizedMessage());
+      System.out.println(e.getCause());
       return null;
     }
   }

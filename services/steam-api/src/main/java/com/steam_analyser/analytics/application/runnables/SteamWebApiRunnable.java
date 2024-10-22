@@ -6,6 +6,7 @@ import in.dragonbra.javasteam.steam.authentication.AuthPollResult;
 import in.dragonbra.javasteam.steam.authentication.AuthSessionDetails;
 import in.dragonbra.javasteam.steam.authentication.AuthenticationException;
 import in.dragonbra.javasteam.steam.authentication.UserConsoleAuthenticator;
+import in.dragonbra.javasteam.steam.discovery.FileServerListProvider;
 import in.dragonbra.javasteam.steam.handlers.steamuser.LogOnDetails;
 import in.dragonbra.javasteam.steam.handlers.steamuser.SteamUser;
 import in.dragonbra.javasteam.steam.handlers.steamuser.callback.LoggedOffCallback;
@@ -18,6 +19,7 @@ import in.dragonbra.javasteam.steam.steamclient.configuration.SteamConfiguration
 import in.dragonbra.javasteam.util.log.LogListener;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -71,6 +73,7 @@ public class SteamWebApiRunnable implements Runnable {
 
     SteamConfiguration configuration = SteamConfiguration.create(builder -> {
       builder.withProtocolTypes(ProtocolTypes.WEB_SOCKET);
+      builder.withServerListProvider(new FileServerListProvider(new File("servers.bin")));
     });
 
     steamClient = new SteamClient(configuration);
@@ -180,7 +183,7 @@ public class SteamWebApiRunnable implements Runnable {
   }
 
   private void saveGuardData(String guardData) {
-    try (FileWriter fw = new FileWriter("guardData.txt")) {
+    try (FileWriter fw = new FileWriter("./" + "guardData.txt")) {
       fw.write(guardData);
     } catch (IOException e) {
       e.printStackTrace();
@@ -188,7 +191,7 @@ public class SteamWebApiRunnable implements Runnable {
   }
 
   private String loadGuardData() {
-    try (BufferedReader reader = new BufferedReader(new FileReader("guardData.txt"))) {
+    try (BufferedReader reader = new BufferedReader(new FileReader("./" + "guardData.txt"))) {
       return reader.readLine();
     } catch (IOException e) {
       return null;

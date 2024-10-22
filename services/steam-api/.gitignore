@@ -34,3 +34,6 @@ build/
 
 application.yaml
 application-dev.yaml
+
+guardaData.txt
+servers.bin
