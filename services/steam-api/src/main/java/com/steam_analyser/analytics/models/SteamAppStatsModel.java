@@ -28,7 +28,7 @@ public class SteamAppStatsModel extends BaseModel {
   private Integer _24hpeak;
 
   @OneToOne(cascade = CascadeType.REMOVE)
-  @JoinColumn(name = "steam_app_id")
+  @JoinColumn(name = "local_steam_app_id")
   private SteamAppModel steamApp;
 
   public void updateCurrentPlayers(Integer playerCount) {

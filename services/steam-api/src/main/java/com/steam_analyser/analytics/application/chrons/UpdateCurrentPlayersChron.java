@@ -1,10 +1,11 @@
 package com.steam_analyser.analytics.application.chrons;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
 import com.steam_analyser.analytics.application.events.PlayerCountUpdatedEvent;
-import com.steam_analyser.analytics.application.events.datatypes.PlayerCountUpdatedArgument;
+import com.steam_analyser.analytics.application.events.datatypes.PartialSteamAppStatsHistory;
 import com.steam_analyser.analytics.application.services.SteamAppService;
 import com.steam_analyser.analytics.application.services.SteamAppStatsService;
 import com.steam_analyser.analytics.infra.Mediator;
@@ -54,7 +55,8 @@ public class UpdateCurrentPlayersChron implements ISteamChron {
 
   @Override
   public void run() {
-    var steamAppsList = steamAppService.findAllSteamApps();
+    // var steamAppsList = steamAppService.findAllSteamApps();
+    var steamAppsList = steamAppService.findNSteamApps(PageRequest.of(0, 5));
     var batches = partitionList(steamAppsList, processBatchSizeFor(steamAppsList));
 
     List<CompletableFuture<Void>> futures = batches.stream()
@@ -69,17 +71,18 @@ public class UpdateCurrentPlayersChron implements ISteamChron {
     ExecutorService executor = Executors.newFixedThreadPool(6);
 
     return CompletableFuture.runAsync(() -> {
-      List<PlayerCountUpdatedArgument> toBePropagated = new ArrayList<>();
+      List<PartialSteamAppStatsHistory> toBePropagated = new ArrayList<>();
       List<SteamAppStatsModel> statsToSave = new ArrayList<>();
 
       for (var nextApp : batch) {
         SteamAppStatsModel actUponAppStats = steamAppStatsService.findOrCreateStatsModelInstance(nextApp);
         Integer playerCount = retryQueryPlayerCountForApp(nextApp.getSteamAppId());
+        log.info("count of " + nextApp.getSteamAppId() + ": " +  playerCount);
 
         if (playerCount != null) {
           actUponAppStats.updateCurrentPlayers(playerCount);
           statsToSave.add(actUponAppStats);
-          toBePropagated.add(new PlayerCountUpdatedArgument(nextApp, playerCount, getExecutionDate()));
+          toBePropagated.add(new PartialSteamAppStatsHistory(nextApp, playerCount, getExecutionDate()));
         }
       }
 
@@ -129,7 +132,7 @@ public class UpdateCurrentPlayersChron implements ISteamChron {
     return getClass().getName();
   }
 
-  private void propagateSideEffects(List<PlayerCountUpdatedArgument> eventArgs) {
+  private void propagateSideEffects(List<PartialSteamAppStatsHistory> eventArgs) {
     PlayerCountUpdatedEvent updateCountEvent = new PlayerCountUpdatedEvent(eventArgs);
     mediator.publish(updateCountEvent);
   }

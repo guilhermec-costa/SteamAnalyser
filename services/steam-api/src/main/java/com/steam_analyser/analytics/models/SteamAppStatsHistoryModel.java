@@ -23,7 +23,7 @@ import java.time.LocalDateTime;
 public class SteamAppStatsHistoryModel extends BaseModel {
  
   @OneToOne(cascade = CascadeType.REMOVE)
-  @JoinColumn(name = "steam_app_id", unique = false)
+  @JoinColumn(name = "local_steam_app_id", unique = false)
   private SteamAppModel steamApp;
 
   @Column(nullable = true)

@@ -11,7 +11,7 @@ import com.steam_analyser.analytics.models.SteamAppModel;
 @RequiredArgsConstructor
 @Getter
 @Setter
-public class PlayerCountUpdatedArgument {
+public class PartialSteamAppStatsHistory {
   
   private final SteamAppModel steamApp;
   private final Integer count;

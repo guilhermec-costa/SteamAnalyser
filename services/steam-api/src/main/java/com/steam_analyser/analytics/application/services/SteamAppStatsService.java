@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 public class SteamAppStatsService {
 
   private final SteamAppStatsAccessor steamAppStatsAccessor;
+  private final SteamAppStatsHistoryService steamAppStatsHistoryService;
 
   public Optional<SteamAppStatsModel> findAppStatsByAppRegisterId(Long localSteamAppId) {
     return steamAppStatsAccessor.findBySteamAppId(localSteamAppId);
@@ -32,5 +33,15 @@ public class SteamAppStatsService {
 
   public void saveMultiple(List<SteamAppStatsModel> list) {
     steamAppStatsAccessor.saveAll(list);
+  }
+
+  public void updateApp24Peak(Long localAppId) {
+    var app = findAppStatsByAppRegisterId(localAppId);
+    if (app.isPresent()) {
+      var appInstance = app.get();
+      Integer _24peak = steamAppStatsHistoryService.queryApp24peak(localAppId);
+      appInstance.set_24hpeak(_24peak);
+      save(appInstance);
+    }
   }
 }
