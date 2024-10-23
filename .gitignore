@@ -1,4 +1,5 @@
 **/Lib/
 **/__pycache__/
 *.pyc
+guardaData.txt
 servers.bin
