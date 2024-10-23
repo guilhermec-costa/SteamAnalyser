@@ -1,4 +1,4 @@
-package com.steam_analyser.analytics.infra;
+package com.steam_analyser.analytics.infra.mediator;
 
 import java.util.List;
 

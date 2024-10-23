@@ -1,4 +1,4 @@
-package com.steam_analyser.analytics.application.chrons;
+package com.steam_analyser.analytics.application.schedulers;
 
 import in.dragonbra.javasteam.steam.steamclient.configuration.SteamConfiguration;
 import java.time.LocalDateTime;

@@ -1,4 +1,4 @@
-package com.steam_analyser.analytics.infra.util;
+package com.steam_analyser.analytics.util;
 
 import java.util.List;
 

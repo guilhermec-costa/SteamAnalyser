@@ -3,8 +3,8 @@ package com.steam_analyser.analytics.application.services;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.steam_analyser.analytics.infra.dataAccessors.SteamAppAccessor;
-import com.steam_analyser.analytics.models.SteamAppModel;
+import com.steam_analyser.analytics.data.models.SteamAppModel;
+import com.steam_analyser.analytics.data.store.SteamAppStore;
 
 import java.util.List;
 
@@ -14,22 +14,22 @@ import lombok.RequiredArgsConstructor;
 @Service
 public class SteamAppService {
 
-  private final SteamAppAccessor steamAppAccessor;
+  private final SteamAppStore steamAppStore;
 
   public List<SteamAppModel> findAllSteamApps() {
-    return steamAppAccessor.findAll();
+    return steamAppStore.findAll();
   }
 
   public List<SteamAppModel> findNSteamApps(Pageable pageable) {
-    return steamAppAccessor.findNElements(pageable);
+    return steamAppStore.findNElements(pageable);
   }
 
   public void saveApps(List<SteamAppModel> appsToSave) {
-    steamAppAccessor.saveAll(appsToSave);
+    steamAppStore.saveAll(appsToSave);
   }
 
   public SteamAppModel findAppById(final Long appId) {
-    return steamAppAccessor.findById(appId)
+    return steamAppStore.findById(appId)
       .orElseThrow(() -> new IllegalArgumentException("App does not exist"));
   }
 

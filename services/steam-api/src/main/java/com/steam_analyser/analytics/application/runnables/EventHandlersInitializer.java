@@ -5,7 +5,8 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
 import com.steam_analyser.analytics.application.handlers.Handler;
-import com.steam_analyser.analytics.infra.Mediator;
+import com.steam_analyser.analytics.infra.mediator.Mediator;
+
 import java.util.List;
 
 import lombok.RequiredArgsConstructor;

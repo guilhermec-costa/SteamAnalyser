@@ -1,4 +1,4 @@
-package com.steam_analyser.analytics.models;
+package com.steam_analyser.analytics.data.models;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

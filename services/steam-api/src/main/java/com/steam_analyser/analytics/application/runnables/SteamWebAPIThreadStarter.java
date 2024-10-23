@@ -4,7 +4,7 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
-import com.steam_analyser.analytics.application.chrons.ISteamChron;
+import com.steam_analyser.analytics.application.schedulers.ISteamChron;
 import com.steam_analyser.analytics.infra.config.SteamSecretsProperties;
 
 import in.dragonbra.javasteam.util.log.DefaultLogListener;

@@ -2,9 +2,9 @@ package com.steam_analyser.analytics.application.services;
 
 import org.springframework.stereotype.Service;
 
-import com.steam_analyser.analytics.application.events.datatypes.PartialSteamAppStatsHistory;
-import com.steam_analyser.analytics.infra.dataAccessors.SteamAppStatsHistoryAcessor;
-import com.steam_analyser.analytics.models.SteamAppStatsHistoryModel;
+import com.steam_analyser.analytics.data.models.SteamAppStatsHistoryModel;
+import com.steam_analyser.analytics.data.store.SteamAppStatsHistoryStore;
+import com.steam_analyser.analytics.data.types.PartialSteamAppStatsHistory;
 
 import lombok.RequiredArgsConstructor;
 
@@ -15,7 +15,7 @@ import java.util.ArrayList;
 @Service
 public class SteamAppStatsHistoryService {
 
-  private final SteamAppStatsHistoryAcessor steamAppStatsHistoryAcessor;
+  private final SteamAppStatsHistoryStore steamAppStatsHistoryStore;
 
   public SteamAppStatsHistoryModel mountFromPartial(final PartialSteamAppStatsHistory data) {
     SteamAppStatsHistoryModel historyInstance = new SteamAppStatsHistoryModel(
@@ -35,10 +35,10 @@ public class SteamAppStatsHistoryService {
   }
 
   public Integer queryApp24peak(final Long localSteamAppId) {
-    return steamAppStatsHistoryAcessor.queryApp24hPeak(localSteamAppId);
+    return steamAppStatsHistoryStore.queryApp24hPeak(localSteamAppId);
   }
 
   public void saveMultiple(final List<SteamAppStatsHistoryModel> list) {
-    steamAppStatsHistoryAcessor.saveAll(list);
+    steamAppStatsHistoryStore.saveAll(list);
   }
 }

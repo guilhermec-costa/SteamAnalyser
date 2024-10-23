@@ -1,4 +1,4 @@
-package com.steam_analyser.analytics.api;
+package com.steam_analyser.analytics.api.routes;
 
 public enum SteamRouteMethods {
 

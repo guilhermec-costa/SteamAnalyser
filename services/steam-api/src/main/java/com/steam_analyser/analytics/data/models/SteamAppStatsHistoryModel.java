@@ -1,4 +1,4 @@
-package com.steam_analyser.analytics.models;
+package com.steam_analyser.analytics.data.models;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -11,27 +11,24 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import java.time.LocalDateTime;
 
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
+@Builder
 @Getter
 @Setter
-@Builder
 @Entity
-@Table(name = "steam_app_current_stats")
-public class SteamAppStatsModel extends BaseModel {
+@Table(name = "steam_app_stats_history")
+public class SteamAppStatsHistoryModel extends BaseModel {
  
-  @Column
-  private Integer currentPlayers;
-
-  @Column
-  private Integer _24hpeak;
-
   @OneToOne(cascade = CascadeType.REMOVE)
-  @JoinColumn(name = "local_steam_app_id")
+  @JoinColumn(name = "local_steam_app_id", unique = false)
   private SteamAppModel steamApp;
 
-  public void updateCurrentPlayers(Integer playerCount) {
-    this.currentPlayers = playerCount;
-  }
+  @Column(nullable = true)
+  private Integer playerCount;
+
+  @Column(unique = false)
+  private LocalDateTime snapshoted_at;
 }

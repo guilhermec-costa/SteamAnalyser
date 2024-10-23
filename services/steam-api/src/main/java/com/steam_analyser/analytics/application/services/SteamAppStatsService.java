@@ -5,9 +5,9 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.steam_analyser.analytics.infra.dataAccessors.SteamAppStatsAccessor;
-import com.steam_analyser.analytics.models.SteamAppModel;
-import com.steam_analyser.analytics.models.SteamAppStatsModel;
+import com.steam_analyser.analytics.data.models.SteamAppModel;
+import com.steam_analyser.analytics.data.models.SteamAppStatsModel;
+import com.steam_analyser.analytics.data.store.SteamAppStatsStore;
 
 import lombok.RequiredArgsConstructor;
 
@@ -15,16 +15,15 @@ import lombok.RequiredArgsConstructor;
 @Service
 public class SteamAppStatsService {
 
-  private final SteamAppStatsAccessor steamAppStatsAccessor;
+  private final SteamAppStatsStore steamAppStatsStore;
   private final SteamAppStatsHistoryService steamAppStatsHistoryService;
-  private final SteamAppService steamAppService;
 
   public Optional<SteamAppStatsModel> findAppStatsByAppRegisterId(Long localSteamAppId) {
-    return steamAppStatsAccessor.findBySteamAppId(localSteamAppId);
+    return steamAppStatsStore.findBySteamAppId(localSteamAppId);
   }
 
   public SteamAppStatsModel save(SteamAppStatsModel appStat) {
-    return steamAppStatsAccessor.save(appStat);
+    return steamAppStatsStore.save(appStat);
   }
 
   public SteamAppStatsModel findOrCreateStatsModelInstance(SteamAppModel app) {
@@ -33,7 +32,7 @@ public class SteamAppStatsService {
   }
 
   public void saveMultiple(List<SteamAppStatsModel> list) {
-    steamAppStatsAccessor.saveAll(list);
+    steamAppStatsStore.saveAll(list);
   }
 
   public void updateApp24Peak(Long localAppId) {
@@ -47,7 +46,7 @@ public class SteamAppStatsService {
   }
 
   public Integer currentPlayersForApp(final Long localSteamAppId) {
-    SteamAppStatsModel app = steamAppStatsAccessor.findBySteamAppId(localSteamAppId)
+    SteamAppStatsModel app = steamAppStatsStore.findBySteamAppId(localSteamAppId)
       .orElseThrow(() -> new IllegalArgumentException("App does not exist"));
 
     return app.getCurrentPlayers();

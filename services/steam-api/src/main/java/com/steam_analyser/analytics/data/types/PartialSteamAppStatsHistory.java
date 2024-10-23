@@ -1,4 +1,4 @@
-package com.steam_analyser.analytics.application.events.datatypes;
+package com.steam_analyser.analytics.data.types;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -6,7 +6,7 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 
-import com.steam_analyser.analytics.models.SteamAppModel;
+import com.steam_analyser.analytics.data.models.SteamAppModel;
 
 @RequiredArgsConstructor
 @Getter

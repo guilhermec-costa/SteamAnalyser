@@ -29,7 +29,7 @@ import java.util.concurrent.CancellationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.steam_analyser.analytics.application.chrons.ISteamChron;
+import com.steam_analyser.analytics.application.schedulers.ISteamChron;
 import com.steam_analyser.analytics.infra.config.SteamSecretsProperties;
 
 import java.util.List;

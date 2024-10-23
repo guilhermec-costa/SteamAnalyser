@@ -1,16 +1,16 @@
-package com.steam_analyser.analytics.application.chrons;
+package com.steam_analyser.analytics.application.schedulers;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
 import com.steam_analyser.analytics.application.events.PlayerCountUpdatedEvent;
-import com.steam_analyser.analytics.application.events.datatypes.PartialSteamAppStatsHistory;
 import com.steam_analyser.analytics.application.services.SteamAppService;
 import com.steam_analyser.analytics.application.services.SteamAppStatsService;
-import com.steam_analyser.analytics.infra.Mediator;
-import com.steam_analyser.analytics.models.SteamAppModel;
-import com.steam_analyser.analytics.models.SteamAppStatsModel;
+import com.steam_analyser.analytics.data.models.SteamAppModel;
+import com.steam_analyser.analytics.data.models.SteamAppStatsModel;
+import com.steam_analyser.analytics.data.types.PartialSteamAppStatsHistory;
+import com.steam_analyser.analytics.infra.mediator.Mediator;
 
 import in.dragonbra.javasteam.steam.steamclient.configuration.SteamConfiguration;
 import in.dragonbra.javasteam.types.KeyValue;
@@ -28,8 +28,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.lang.Math;
 
-import static com.steam_analyser.analytics.api.SteamRouteInterfaces.*;
-import static com.steam_analyser.analytics.api.SteamRouteMethods.*;
+import static com.steam_analyser.analytics.api.routes.SteamRouteInterfaces.*;
+import static com.steam_analyser.analytics.api.routes.SteamRouteMethods.*;
 
 @RequiredArgsConstructor
 @Component
