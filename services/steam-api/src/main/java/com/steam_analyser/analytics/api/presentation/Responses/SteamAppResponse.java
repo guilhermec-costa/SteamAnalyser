@@ -1,4 +1,4 @@
-package com.steam_analyser.analytics.api.presentation.Responses;
+package com.steam_analyser.analytics.api.presentation.responses;
 
 import java.time.LocalDateTime;
 

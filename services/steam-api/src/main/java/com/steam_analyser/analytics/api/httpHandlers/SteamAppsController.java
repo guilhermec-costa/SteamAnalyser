@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.steam_analyser.analytics.api.presentation.Responses.SteamAppResponse;
+import com.steam_analyser.analytics.api.presentation.responses.SteamAppResponse;
 import com.steam_analyser.analytics.application.services.ModelMappingService;
 import com.steam_analyser.analytics.application.services.SteamAppService;
 

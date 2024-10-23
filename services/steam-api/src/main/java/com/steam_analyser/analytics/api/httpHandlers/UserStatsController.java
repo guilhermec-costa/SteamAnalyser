@@ -2,7 +2,7 @@ package com.steam_analyser.analytics.api.httpHandlers;
 
 import org.springframework.web.bind.annotation.RestController;
 
-import com.steam_analyser.analytics.api.presentation.Responses.SteamAppPlayerCountResponse;
+import com.steam_analyser.analytics.api.presentation.responses.SteamAppPlayerCountResponse;
 import com.steam_analyser.analytics.application.services.SteamAppService;
 import com.steam_analyser.analytics.application.services.SteamAppStatsService;
 
