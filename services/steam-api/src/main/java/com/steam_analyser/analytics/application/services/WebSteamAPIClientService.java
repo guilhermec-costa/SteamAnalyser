@@ -19,39 +19,43 @@ import lombok.RequiredArgsConstructor;
 @Service
 public class WebSteamAPIClientService {
 
-  private final WebSteamAPIClient steamClient;
+  // private final WebSteamAPIClient steamClient;
   private final SteamSecretsProperties steamSecrets;
   private final SteamStoreAPIClient steamStoreClient;
   private final ObjectMapper objectMapper;
 
   public SteamMostPlayedGamesResponse getMostPlayedApps() throws Exception {
-    String mostPlayedGames = steamClient.mostPlayedGames(steamSecrets.getKey());
-    SteamMostPlayedGamesResponse parsedMostPlayedGames = objectMapper.readValue(mostPlayedGames,
-        SteamMostPlayedGamesResponse.class);
-    return parsedMostPlayedGames;
+    // String mostPlayedGames = steamClient.mostPlayedGames(steamSecrets.getKey());
+    // SteamMostPlayedGamesResponse parsedMostPlayedGames = objectMapper.readValue(mostPlayedGames,
+    //     SteamMostPlayedGamesResponse.class);
+    // return parsedMostPlayedGames;
+    return null;
   }
 
   public Integer getNumberOfCurrentPlayersForApp(String appId) throws JsonProcessingException, JsonMappingException {
-    try {
-      var appCurrentPlayersString = steamClient.numberOfCurrentPlayersByApp(steamSecrets.getKey(), appId);
-      SteamAppPlayerCountResponse appPlayerCountConverted = objectMapper.readValue(appCurrentPlayersString,
-          SteamAppPlayerCountResponse.class);
-      return appPlayerCountConverted.getPlayerCount();
-    } catch (Exception e) {
-      System.out.println(e.getMessage());
-      return null;
-    }
+    // try {
+    //   var appCurrentPlayersString = steamClient.numberOfCurrentPlayersByApp(steamSecrets.getKey(), appId);
+    //   SteamAppPlayerCountResponse appPlayerCountConverted = objectMapper.readValue(appCurrentPlayersString,
+    //       SteamAppPlayerCountResponse.class);
+    //   return appPlayerCountConverted.getPlayerCount();
+    // } catch (Exception e) {
+    //   System.out.println(e.getMessage());
+    //   return null;
+    // }
+    return null;
   }
 
   public SteamAppDetailsResponse getDetailsForApp(final String appId) throws Exception {
-    String appDetails = steamStoreClient.appDetails(appId);
-    SteamAppDetailsResponse parsedAppDetails = objectMapper.readValue(appDetails, SteamAppDetailsResponse.class);
-    return parsedAppDetails;
+    // String appDetails = steamStoreClient.appDetails(appId);
+    // SteamAppDetailsResponse parsedAppDetails = objectMapper.readValue(appDetails, SteamAppDetailsResponse.class);
+    // return parsedAppDetails;
+    return null;
   }
 
   public AppListResponse getAllApps() throws Exception {
-    String stringfiedApps = steamClient.allApps(steamSecrets.getKey());
-    AppListResponse parsedAppsInformation = objectMapper.readValue(stringfiedApps, AppListResponse.class);
-    return parsedAppsInformation;
+    // String stringfiedApps = steamClient.allApps(steamSecrets.getKey());
+    // AppListResponse parsedAppsInformation = objectMapper.readValue(stringfiedApps, AppListResponse.class);
+    // return parsedAppsInformation;
+    return null;
   }
 }

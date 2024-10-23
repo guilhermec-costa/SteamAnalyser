@@ -7,7 +7,7 @@ public enum SteamRouteMethods {
   public String string;
   public Integer version;
 
-  SteamRouteMethods(final String _name, final int _version) {
+  SteamRouteMethods(String _name, int _version) {
     string = _name;
     version = _version;
   }

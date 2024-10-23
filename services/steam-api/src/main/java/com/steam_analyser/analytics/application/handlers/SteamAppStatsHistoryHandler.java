@@ -25,7 +25,7 @@ public class SteamAppStatsHistoryHandler implements Handler<PlayerCountUpdatedEv
 
   @Override
   public void handle(PlayerCountUpdatedEvent event) {
-    logger.info("Modifying History");
+    // logger.info("Modifying History");
     var args = event.getArgs();
     for (PlayerCountUpdatedArgument arg : args) {
       SteamAppStatsHistoryModel historyInstance = new SteamAppStatsHistoryModel(

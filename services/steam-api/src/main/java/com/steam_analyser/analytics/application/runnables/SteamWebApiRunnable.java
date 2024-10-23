@@ -37,6 +37,7 @@ import java.util.List;
 public class SteamWebApiRunnable implements Runnable {
 
   private SteamClient steamClient;
+  private SteamSecretsProperties steamSecrets;
   private boolean isExecuting;
   private final String username;
   private final String password;
@@ -54,6 +55,7 @@ public class SteamWebApiRunnable implements Runnable {
     this.scanner = new Scanner(System.in);
     this.authToken = loadGuardData();
     futureChrons = steamChrons;
+    this.steamSecrets = steamSecrets;
   }
 
   static class MyListener implements LogListener {
@@ -74,6 +76,7 @@ public class SteamWebApiRunnable implements Runnable {
     SteamConfiguration configuration = SteamConfiguration.create(builder -> {
       builder.withProtocolTypes(ProtocolTypes.WEB_SOCKET);
       builder.withServerListProvider(new FileServerListProvider(new File("servers.bin")));
+      builder.withWebAPIKey(this.steamSecrets.getKey());
     });
 
     steamClient = new SteamClient(configuration);

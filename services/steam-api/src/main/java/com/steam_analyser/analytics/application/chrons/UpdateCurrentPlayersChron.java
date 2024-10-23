@@ -1,13 +1,7 @@
 package com.steam_analyser.analytics.application.chrons;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.scheduling.TaskScheduler;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.steam_analyser.analytics.application.events.PlayerCountUpdatedEvent;
 import com.steam_analyser.analytics.application.events.datatypes.PlayerCountUpdatedArgument;
@@ -20,7 +14,6 @@ import com.steam_analyser.analytics.models.SteamAppStatsModel;
 import in.dragonbra.javasteam.steam.steamclient.configuration.SteamConfiguration;
 import in.dragonbra.javasteam.types.KeyValue;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -32,7 +25,6 @@ import java.util.stream.Collectors;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.time.LocalDateTime;
 import java.lang.Math;
 
 import static com.steam_analyser.analytics.api.SteamRouteInterfaces.*;
@@ -48,7 +40,10 @@ public class UpdateCurrentPlayersChron implements ISteamChron {
   private final Mediator mediator;
   private final TaskScheduler taskScheduler;
   private SteamConfiguration steamConfiguration;
-  private final int executionFrequency = 900_000;
+  private final int executionFrequency = 1_800_000; // 30 min
+  private final int retryLimit = 4;
+  private final int initialBackoff = 500;
+  private final int batchSize = 250;
 
   @SuppressWarnings("deprecation")
   public void start(final SteamConfiguration theSteamConfiguration) {
@@ -61,15 +56,17 @@ public class UpdateCurrentPlayersChron implements ISteamChron {
   public void run() {
     var steamAppsList = steamAppService.findAllSteamApps();
     var batches = partitionList(steamAppsList, processBatchSizeFor(steamAppsList));
+
     List<CompletableFuture<Void>> futures = batches.stream()
         .map(this::processBatchParallely)
         .collect(Collectors.toList());
 
     CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+    log.info("Finishing job execution");
   }
 
   private CompletableFuture<Void> processBatchParallely(List<SteamAppModel> batch) {
-    ExecutorService executor = Executors.newFixedThreadPool(3);
+    ExecutorService executor = Executors.newFixedThreadPool(6);
 
     return CompletableFuture.runAsync(() -> {
       List<PlayerCountUpdatedArgument> toBePropagated = new ArrayList<>();
@@ -77,15 +74,49 @@ public class UpdateCurrentPlayersChron implements ISteamChron {
 
       for (var nextApp : batch) {
         SteamAppStatsModel actUponAppStats = steamAppStatsService.findOrCreateStatsModelInstance(nextApp);
-        Integer playerCount = queryPlayerCountForApp(nextApp.getSteamAppId());
-        actUponAppStats.updateCurrentPlayers(playerCount);
-        statsToSave.add(actUponAppStats);
-        toBePropagated.add(new PlayerCountUpdatedArgument(nextApp, playerCount, getExecutionDate()));
+        Integer playerCount = retryQueryPlayerCountForApp(nextApp.getSteamAppId());
+
+        if (playerCount != null) {
+          actUponAppStats.updateCurrentPlayers(playerCount);
+          statsToSave.add(actUponAppStats);
+          toBePropagated.add(new PlayerCountUpdatedArgument(nextApp, playerCount, getExecutionDate()));
+        }
       }
 
       steamAppStatsService.saveMultiple(statsToSave);
       propagateSideEffects(toBePropagated);
+      executor.shutdown();
     }, executor);
+  }
+
+  private Integer retryQueryPlayerCountForApp(String steamAppId) {
+    int attempts = 0;
+    int backoff = initialBackoff;
+
+    while (attempts < retryLimit) {
+      try {
+        Map<String, String> args = new HashMap<>();
+        args.put("appid", steamAppId);
+
+        Thread.sleep(850); 
+        var currentPlayersResponse = steamConfiguration.getWebAPI(ISteamUserStats.string)
+            .call("GET", GetNumberOfCurrentPlayers.string, GetNumberOfCurrentPlayers.version, args);
+
+        return extractPlayerCountingFromResponse(currentPlayersResponse);
+
+      } catch (Exception e) {
+        try {
+          Thread.sleep(backoff);
+          backoff *= 2;
+        } catch (InterruptedException ie) {
+          Thread.currentThread().interrupt();
+          return null;
+        }
+      }
+      attempts++;
+    }
+
+    return null;
   }
 
   private Integer extractPlayerCountingFromResponse(KeyValue res) {
@@ -98,42 +129,24 @@ public class UpdateCurrentPlayersChron implements ISteamChron {
     return getClass().getName();
   }
 
-  private Integer queryPlayerCountForApp(String steamAppId) {
-    try {
-      Map<String, String> args = new HashMap<>();
-      args.put("appid", steamAppId);
-
-      var currentPlayersResponse = steamConfiguration.getWebAPI(ISteamUserStats.string)
-          .call(
-              GetNumberOfCurrentPlayers.string,
-              GetNumberOfCurrentPlayers.version, args);
-
-      return extractPlayerCountingFromResponse(currentPlayersResponse);
-    } catch (IOException e) {
-      // log.error(e.getLocalizedMessage());
-      System.out.println(e.getCause());
-      return null;
-    }
-  }
-
   private void propagateSideEffects(List<PlayerCountUpdatedArgument> eventArgs) {
     PlayerCountUpdatedEvent updateCountEvent = new PlayerCountUpdatedEvent(eventArgs);
     mediator.publish(updateCountEvent);
   }
 
   private <T> int processBatchSizeFor(List<T> items) {
-    return 500;
+    return batchSize;
   }
 
   private <T> List<List<T>> partitionList(List<T> list, int batchSize) {
-    var partionContainer = new ArrayList<List<T>>();
+    var partitionContainer = new ArrayList<List<T>>();
     int itemsCount = list.size();
 
     for (int i = 0; i < itemsCount; i += batchSize) {
-      int nextPartionLimit = Math.min(i + batchSize, itemsCount);
-      var singlePartion = list.subList(i, nextPartionLimit);
-      partionContainer.add(singlePartion);
+      int nextPartitionLimit = Math.min(i + batchSize, itemsCount);
+      var singlePartition = list.subList(i, nextPartitionLimit);
+      partitionContainer.add(singlePartition);
     }
-    return partionContainer;
+    return partitionContainer;
   }
 }
