@@ -28,8 +28,9 @@ public class SteamAppService {
     steamAppAccessor.saveAll(appsToSave);
   }
 
-  public SteamAppModel findAppById(String appId) {
-    return steamAppAccessor.findById(Long.parseLong(appId))
-      .orElseThrow();
+  public SteamAppModel findAppById(final Long appId) {
+    return steamAppAccessor.findById(appId)
+      .orElseThrow(() -> new IllegalArgumentException("App does not exist"));
   }
+
 }

@@ -17,6 +17,7 @@ public class SteamAppStatsService {
 
   private final SteamAppStatsAccessor steamAppStatsAccessor;
   private final SteamAppStatsHistoryService steamAppStatsHistoryService;
+  private final SteamAppService steamAppService;
 
   public Optional<SteamAppStatsModel> findAppStatsByAppRegisterId(Long localSteamAppId) {
     return steamAppStatsAccessor.findBySteamAppId(localSteamAppId);
@@ -43,5 +44,12 @@ public class SteamAppStatsService {
       appInstance.set_24hpeak(_24peak);
       save(appInstance);
     }
+  }
+
+  public Integer currentPlayersForApp(final Long localSteamAppId) {
+    SteamAppStatsModel app = steamAppStatsAccessor.findBySteamAppId(localSteamAppId)
+      .orElseThrow(() -> new IllegalArgumentException("App does not exist"));
+
+    return app.getCurrentPlayers();
   }
 }

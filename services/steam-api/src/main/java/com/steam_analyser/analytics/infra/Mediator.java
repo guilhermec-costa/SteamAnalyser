@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 
-import com.steam_analyser.analytics.api.presentation.SteamResponses.AppListResponse.App;
 import com.steam_analyser.analytics.application.events.ApplicationEvent;
 import com.steam_analyser.analytics.application.handlers.Handler;
 

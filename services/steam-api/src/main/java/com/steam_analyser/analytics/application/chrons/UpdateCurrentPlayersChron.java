@@ -49,7 +49,7 @@ public class UpdateCurrentPlayersChron implements ISteamChron {
   @SuppressWarnings("deprecation")
   public void start(final SteamConfiguration theSteamConfiguration) {
     steamConfiguration = theSteamConfiguration;
-    taskScheduler.scheduleAtFixedRate(this::run, executionFrequency);
+    // taskScheduler.scheduleAtFixedRate(this::run, executionFrequency);
     log.info("Executing task: \"" + getChronName() + "\"");
   }
 
