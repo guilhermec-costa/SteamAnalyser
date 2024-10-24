@@ -58,18 +58,6 @@ public class SteamWebApiRunnable implements Runnable {
     this.steamSecrets = steamSecrets;
   }
 
-  static class MyListener implements LogListener {
-    @Override
-    public void onLog(Class<?> clazz, String message, Throwable throwable) {
-      System.out.println("MyListener - " + clazz.getName() + ": " + message);
-    }
-
-    @Override
-    public void onError(Class<?> clazz, String message, Throwable throwable) {
-      System.err.println("MyListener - " + clazz.getName() + ": " + message);
-    }
-  }
-
   @Override
   public void run() {
 
