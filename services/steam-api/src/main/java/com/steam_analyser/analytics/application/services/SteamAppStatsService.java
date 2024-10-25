@@ -8,6 +8,7 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.steam_analyser.analytics.data.models.SteamAppModel;
 import com.steam_analyser.analytics.data.models.SteamAppStatsModel;
@@ -18,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Service
+@Transactional
 public class SteamAppStatsService {
 
   private final SteamAppStatsStore steamAppStatsStore;

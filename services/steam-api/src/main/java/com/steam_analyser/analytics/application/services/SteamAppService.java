@@ -2,20 +2,25 @@ package com.steam_analyser.analytics.application.services;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.steam_analyser.analytics.data.models.SteamAppModel;
 import com.steam_analyser.analytics.data.store.SteamAppStore;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Service
+@Transactional
 public class SteamAppService {
 
   private final SteamAppStore steamAppStore;
+  private final Executor taskExecutor;
 
   public List<SteamAppModel> findAllSteamApps() {
     return steamAppStore.findAll();
@@ -42,4 +47,7 @@ public class SteamAppService {
     return steamAppStore.findBySteamAppId(steamAppId);
   }
 
+  public CompletableFuture<Void> saveAppAsync(SteamAppModel app) {
+    return CompletableFuture.runAsync(() -> steamAppStore.save(app), taskExecutor);
+  }
 }
