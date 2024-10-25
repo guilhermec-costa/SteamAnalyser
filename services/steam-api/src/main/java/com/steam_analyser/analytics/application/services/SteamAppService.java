@@ -7,6 +7,7 @@ import com.steam_analyser.analytics.data.models.SteamAppModel;
 import com.steam_analyser.analytics.data.store.SteamAppStore;
 
 import java.util.List;
+import java.util.Optional;
 
 import lombok.RequiredArgsConstructor;
 
@@ -24,13 +25,21 @@ public class SteamAppService {
     return steamAppStore.findNElements(pageable);
   }
 
-  public void saveApps(List<SteamAppModel> appsToSave) {
+  public void saveList(List<SteamAppModel> appsToSave) {
     steamAppStore.saveAll(appsToSave);
+  }
+
+  public void saveOne(SteamAppModel app) {
+    steamAppStore.save(app);
   }
 
   public SteamAppModel findAppById(final Long appId) {
     return steamAppStore.findById(appId)
-      .orElseThrow(() -> new IllegalArgumentException("App does not exist"));
+        .orElseThrow(() -> new IllegalArgumentException("App does not exist"));
+  }
+
+  public Optional<SteamAppModel> findAppBySteamAppId(final String steamAppId) {
+    return steamAppStore.findBySteamAppId(steamAppId);
   }
 
 }

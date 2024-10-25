@@ -5,11 +5,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.steam_analyser.analytics.api.presentation.responses.SteamAppPlayerCountResponse;
 import com.steam_analyser.analytics.api.presentation.responses.SteamAppStatsResponse;
 import com.steam_analyser.analytics.application.services.ModelMappingService;
-import com.steam_analyser.analytics.application.services.SteamAppService;
 import com.steam_analyser.analytics.application.services.SteamAppStatsService;
-import com.steam_analyser.analytics.data.models.SteamAppStatsModel;
-import com.steam_analyser.analytics.data.projections.SteamAppStatsProjection;
-import com.steam_analyser.analytics.data.types.SortableByOptions;
+
 
 import lombok.RequiredArgsConstructor;
 
@@ -40,11 +37,9 @@ public class SteamAppStatsController {
   }
 
   @GetMapping("topBy")
-  public ResponseEntity<Page<SteamAppStatsResponse>> getTopByCurrentPlayers(
-      @RequestParam(required = false, defaultValue = "currentPlayers") SortableByOptions sortParam,
-      Pageable pageable) {
-    var appsStats = steamAppStatsService.listBy(pageable, sortParam);
-    var parsedResponse = modelMappingService.mapList(appsStats, SteamAppStatsResponse.class);
+  public ResponseEntity<Page<SteamAppStatsResponse>> getTopByCurrentPlayers(Pageable pageable) {
+    var appsStats = steamAppStatsService.listBy(pageable);
+    var parsedResponse = modelMappingService.mapList(appsStats.toList(), SteamAppStatsResponse.class);
     var page = new PageImpl<>(parsedResponse, pageable, parsedResponse.size());
     return ResponseEntity.ok().body(page);
   }

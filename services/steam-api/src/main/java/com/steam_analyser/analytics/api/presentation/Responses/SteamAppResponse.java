@@ -1,7 +1,5 @@
 package com.steam_analyser.analytics.api.presentation.responses;
 
-import java.time.LocalDateTime;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;

@@ -27,6 +27,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.lang.Math;
+import java.time.Duration;
 
 import static com.steam_analyser.analytics.api.routes.SteamRouteInterfaces.*;
 import static com.steam_analyser.analytics.api.routes.SteamRouteMethods.*;
@@ -41,11 +42,12 @@ public class UpdateCurrentPlayersChron implements ISteamChron {
   private final Mediator mediator;
   private final TaskScheduler taskScheduler;
   private SteamConfiguration steamConfiguration;
-  private final int executionFrequency = 1_800_000; // 30 min
+  private final Duration executionFrequency = Duration.ofMinutes(30);
   private final int retryLimit = 4;
   private final int initialBackoff = 500;
   private final int batchSize = 250;
 
+  @Override
   @SuppressWarnings("deprecation")
   public void start(final SteamConfiguration theSteamConfiguration) {
     steamConfiguration = theSteamConfiguration;

@@ -2,7 +2,8 @@ package com.steam_analyser.analytics.api.routes;
 
 public enum SteamRouteInterfaces {
 
-  ISteamUserStats("ISteamUserStats");
+  ISteamUserStats("ISteamUserStats"),
+  ISteamApps("ISteamApps");
 
   public String string;
 

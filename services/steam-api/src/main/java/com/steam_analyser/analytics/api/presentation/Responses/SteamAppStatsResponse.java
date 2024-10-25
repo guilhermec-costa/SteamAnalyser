@@ -19,7 +19,7 @@ public class SteamAppStatsResponse {
   private LocalDateTime updatedAt;
 
   @JsonProperty("_24peak")
-  private Integer _24peak;
+  private int _24peak;
 
   @JsonProperty("current_players")
   private Integer currentPlayers;

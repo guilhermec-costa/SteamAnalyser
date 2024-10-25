@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 
 public interface SteamAppStatsProjection {
     LocalDateTime getUpdatedAt();
-    Integer get_24hpeak();
-    Integer getCurrentPlayers();
+    int get_24hpeak();
+    int getCurrentPlayers();
     String getName();
 }

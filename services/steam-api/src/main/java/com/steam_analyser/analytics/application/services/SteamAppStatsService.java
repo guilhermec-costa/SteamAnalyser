@@ -1,23 +1,18 @@
 package com.steam_analyser.analytics.application.services;
 
 import java.util.Optional;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.Comparator;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import com.steam_analyser.analytics.api.presentation.responses.SteamAppStatsResponse;
 import com.steam_analyser.analytics.data.models.SteamAppModel;
 import com.steam_analyser.analytics.data.models.SteamAppStatsModel;
 import com.steam_analyser.analytics.data.projections.SteamAppStatsProjection;
 import com.steam_analyser.analytics.data.store.SteamAppStatsStore;
-import com.steam_analyser.analytics.data.types.SortableByOptions;
-import com.steam_analyser.analytics.util.DataUtilities;
 
 import lombok.RequiredArgsConstructor;
 
@@ -62,10 +57,7 @@ public class SteamAppStatsService {
     return app.getCurrentPlayers();
   }
 
-  public List<SteamAppStatsProjection> listBy(Pageable pageable, SortableByOptions by) {
-    var result = steamAppStatsStore.presentableAppStats(pageable);
-    var sortedDataset = result.toList().stream()
-        .sorted(Comparator.comparingInt(SteamAppStatsProjection::getCurrentPlayers));
-    return sortedDataset.collect(Collectors.toList()).reversed();
+  public Page<SteamAppStatsProjection> listBy(Pageable pageable) {
+    return steamAppStatsStore.presentAppsStatsQuery(pageable);
   }
 }
