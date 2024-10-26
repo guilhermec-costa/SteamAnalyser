@@ -1,10 +1,12 @@
 package com.steam_analyser.analytics.application.schedulers;
 
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
 import com.steam_analyser.analytics.application.events.PlayerCountUpdatedEvent;
+import com.steam_analyser.analytics.application.services.ProfillingService;
 import com.steam_analyser.analytics.application.services.SteamAppService;
 import com.steam_analyser.analytics.application.services.SteamAppStatsService;
 import com.steam_analyser.analytics.data.models.SteamAppModel;
@@ -25,6 +27,7 @@ import java.util.HashMap;
 import java.util.stream.Collectors;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 import java.lang.Math;
 import java.time.Duration;
 
@@ -39,24 +42,28 @@ public class UpdateCurrentPlayersChron implements ISteamChron {
   private SteamAppStatsService steamAppStatsService;
   private Mediator mediator;
   private TaskScheduler taskScheduler;
-  private final Executor executor = ThreadUtil.getTaskExecutor(null, "updatePlayersThread-");
+  private ProfillingService profillingService;
+  private final Executor executor = Executors.newFixedThreadPool(100);
+  private int batchProcessingCounter = 0;
 
   public UpdateCurrentPlayersChron(
-    SteamAppService steamAppService,
-    SteamAppStatsService steamAppStatsService,
-    Mediator mediator,
-    @Qualifier("sharedTaskScheduler") TaskScheduler taskScheduler
-  ) {
+      SteamAppService steamAppService,
+      SteamAppStatsService steamAppStatsService,
+      Mediator mediator,
+      @Qualifier("sharedTaskScheduler") TaskScheduler taskScheduler,
+      ProfillingService profillingService) {
     this.steamAppService = steamAppService;
     this.steamAppStatsService = steamAppStatsService;
     this.mediator = mediator;
     this.taskScheduler = taskScheduler;
+    this.profillingService = profillingService;
   }
+
   private SteamConfiguration steamConfiguration;
-  private final Duration executionFrequency = Duration.ofMinutes(30);
-  private final int retryLimit = 4;
+  private final Duration executionFrequency = Duration.ofMinutes(35);
+  private final int retryLimit = 3;
   private final int initialBackoff = 500;
-  private final int batchSize = 250;
+  private final int batchSize = 400;
 
   @Override
   public void start(final SteamConfiguration steamConfiguration) {
@@ -68,19 +75,24 @@ public class UpdateCurrentPlayersChron implements ISteamChron {
 
   @Override
   public void run() {
-    var steamAppsList = steamAppService.findAllSteamApps();
+    var steamAppsList = steamAppService.findNSteamApps(PageRequest.of(0, 1500));
     var batches = partitionList(steamAppsList, processBatchSizeFor(steamAppsList));
 
+    var start = profillingService.getNow();
     List<CompletableFuture<Void>> futures = batches.stream()
         .map(this::processBatchParallely)
         .collect(Collectors.toList());
 
     CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
-    log.info("Finishing execution of \"" + getChronName() + "\"");
+    var end = profillingService.getNow();
+    var executionDuration = profillingService.measureTimeBetween(start, end);
+    log.info("Finishing execution of \"" + getChronName() + "\" in " + executionDuration);
   }
 
   private CompletableFuture<Void> processBatchParallely(List<SteamAppModel> batch) {
     return CompletableFuture.runAsync(() -> {
+      batchProcessingCounter++;
+      log.info("Processing batch id: " + batchProcessingCounter);
       List<PartialSteamAppStatsHistory> toBePropagated = new ArrayList<>();
       List<SteamAppStatsModel> statsToSave = new ArrayList<>();
 
@@ -88,28 +100,32 @@ public class UpdateCurrentPlayersChron implements ISteamChron {
         SteamAppStatsModel actUponAppStats = steamAppStatsService.findOrCreateStatsModelInstance(nextApp);
         Integer playerCount = retryQueryPlayerCountForApp(nextApp.getSteamAppId());
 
-        // if (playerCount != null) {
+        if (playerCount != null) {
           actUponAppStats.updateCurrentPlayers(playerCount);
           statsToSave.add(actUponAppStats);
           toBePropagated.add(new PartialSteamAppStatsHistory(nextApp, playerCount, getExecutionDate()));
-        // }
+        }
       }
 
-      steamAppStatsService.saveMultiple(statsToSave);
-      propagateSideEffects(toBePropagated);
-    });
+      CompletableFuture<Void> saveFuture = CompletableFuture
+          .runAsync(() -> steamAppStatsService.saveMultiple(statsToSave), executor);
+      CompletableFuture<Void> propagateFuture = CompletableFuture.runAsync(() -> propagateSideEffects(toBePropagated),
+          executor);
+
+      CompletableFuture.allOf(saveFuture, propagateFuture).join();
+
+    }, executor);
   }
 
   private Integer retryQueryPlayerCountForApp(String steamAppId) {
-    int attempts = 0;
+    int currentAttempts = 0;
     int backoff = initialBackoff;
 
-    while (attempts < retryLimit) {
+    while (currentAttempts < retryLimit) {
       try {
         Map<String, String> args = new HashMap<>();
         args.put("appid", steamAppId);
 
-        Thread.sleep(850);
         var currentPlayersResponse = steamConfiguration.getWebAPI(ISteamUserStats.string)
             .call("GET", GetNumberOfCurrentPlayers.string, GetNumberOfCurrentPlayers.version, args);
 
@@ -124,7 +140,7 @@ public class UpdateCurrentPlayersChron implements ISteamChron {
           return null;
         }
       }
-      attempts++;
+      currentAttempts++;
     }
 
     return null;
@@ -150,6 +166,7 @@ public class UpdateCurrentPlayersChron implements ISteamChron {
   }
 
   private <T> List<List<T>> partitionList(List<T> list, int batchSize) {
+    log.info("Partioning app list");
     var partitionContainer = new ArrayList<List<T>>();
     int itemsCount = list.size();
 

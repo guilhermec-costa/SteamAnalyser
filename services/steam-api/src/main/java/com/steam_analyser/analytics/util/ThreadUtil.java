@@ -8,7 +8,7 @@ public class ThreadUtil {
 
   private static int threadScaleFactor = 1;
 
-  static private int getProcessorsNumber() {
+  static public int getProcessorsNumber() {
     return Runtime.getRuntime().availableProcessors();
   }
 

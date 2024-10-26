@@ -7,6 +7,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.steam_analyser.analytics.api.presentation.externalResponses.SingleSteamApp;
+import com.steam_analyser.analytics.application.services.ProfillingService;
 import com.steam_analyser.analytics.application.services.SteamAppService;
 import com.steam_analyser.analytics.data.models.SteamAppModel;
 import com.steam_analyser.analytics.util.ThreadUtil;
@@ -35,15 +36,17 @@ public class RegisterNewAppsChron implements ISteamChron {
 
   private SteamAppService steamAppService;
   private SteamConfiguration steamConfiguration;
+  private ProfillingService profillingService;
   private TaskScheduler taskScheduler;
-  private final Executor executor = ThreadUtil.getTaskExecutor(null, "RegisterNewAppsThread-");
 
   private final Duration executionFrequency = Duration.ofMinutes(90);
 
   public RegisterNewAppsChron(
       @Qualifier("sharedTaskScheduler") TaskScheduler taskScheduler,
-      SteamAppService steamAppService) {
+      SteamAppService steamAppService,
+      ProfillingService profillingService) {
     this.steamAppService = steamAppService;
+    this.profillingService = profillingService;
     this.taskScheduler = taskScheduler;
   }
 
@@ -56,18 +59,23 @@ public class RegisterNewAppsChron implements ISteamChron {
 
   @Override
   public void run() {
-    var parsedApps = queryAllSteamApps();
+    var parsedApps = fetchAllSteamApps();
     if (parsedApps.isEmpty())
       return;
 
+    var start = profillingService.getNow();
     List<CompletableFuture<Void>> futures =
     parsedApps.stream().map(this::createOrPassAsync)
     .collect(Collectors.toList());
     CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
-    log.info("Finishing execution of \"" + getChronName() + "\"");
+
+    var end = profillingService.getNow();
+    var executionDuration = profillingService.measureTimeBetween(start, end);
+    log.info("Finishing execution of \"" + getChronName() + "\" in " + executionDuration);
   }
 
-  private List<SingleSteamApp> queryAllSteamApps() {
+  private List<SingleSteamApp> fetchAllSteamApps() {
+    log.info("Fetching steam apps fron Steam Web API");
     try {
       var existingsAppsResponse = steamConfiguration.getWebAPI(ISteamApps.string)
           .call("GET", GetAppList.string, GetAppList.version);
