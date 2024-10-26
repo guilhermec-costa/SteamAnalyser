@@ -1,5 +1,7 @@
 package com.steam_analyser.analytics.application.schedulers;
 
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.lang.NonNull;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -7,6 +9,7 @@ import org.springframework.stereotype.Component;
 import com.steam_analyser.analytics.api.presentation.externalResponses.SingleSteamApp;
 import com.steam_analyser.analytics.application.services.SteamAppService;
 import com.steam_analyser.analytics.data.models.SteamAppModel;
+import com.steam_analyser.analytics.util.ThreadUtil;
 
 import java.time.Duration;
 
@@ -19,9 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ExecutorService;
 import java.util.stream.Collectors;
 
 import lombok.extern.slf4j.Slf4j;
@@ -29,16 +29,23 @@ import lombok.extern.slf4j.Slf4j;
 import static com.steam_analyser.analytics.api.routes.SteamRouteInterfaces.*;
 import static com.steam_analyser.analytics.api.routes.SteamRouteMethods.*;
 
-@RequiredArgsConstructor
 @Component
 @Slf4j
 public class RegisterNewAppsChron implements ISteamChron {
 
-  private final SteamAppService steamAppService;
+  private SteamAppService steamAppService;
   private SteamConfiguration steamConfiguration;
-  private final Executor executor = Executors.newFixedThreadPool(5);
-  private final TaskScheduler taskScheduler;
+  private TaskScheduler taskScheduler;
+  private final Executor executor = ThreadUtil.getTaskExecutor(null, "RegisterNewAppsThread-");
+
   private final Duration executionFrequency = Duration.ofMinutes(90);
+
+  public RegisterNewAppsChron(
+      @Qualifier("sharedTaskScheduler") TaskScheduler taskScheduler,
+      SteamAppService steamAppService) {
+    this.steamAppService = steamAppService;
+    this.taskScheduler = taskScheduler;
+  }
 
   @Override
   public void start(final SteamConfiguration steamConfiguration) {
@@ -53,8 +60,9 @@ public class RegisterNewAppsChron implements ISteamChron {
     if (parsedApps.isEmpty())
       return;
 
-    List<CompletableFuture<Void>> futures = parsedApps.stream().map(this::createOrPassAsync)
-        .collect(Collectors.toList());
+    List<CompletableFuture<Void>> futures =
+    parsedApps.stream().map(this::createOrPassAsync)
+    .collect(Collectors.toList());
     CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
     log.info("Finishing execution of \"" + getChronName() + "\"");
   }
@@ -74,9 +82,9 @@ public class RegisterNewAppsChron implements ISteamChron {
       Optional<SteamAppModel> storedApp = steamAppService.findAppBySteamAppId(app.getAppId());
       if (storedApp.isEmpty()) {
         SteamAppModel newApp = new SteamAppModel(app.getName(), app.getAppId());
-        steamAppService.saveAppAsync(newApp);
+        steamAppService.saveOne(newApp);
       }
-    }, executor);
+    });
   }
 
   private List<SingleSteamApp> parseSteamAppsResponse(KeyValue response) {
