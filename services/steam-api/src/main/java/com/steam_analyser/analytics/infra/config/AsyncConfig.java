@@ -1,7 +1,6 @@
 package com.steam_analyser.analytics.infra.config;
 
 import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.springframework.context.annotation.Bean;
@@ -18,9 +17,10 @@ public class AsyncConfig implements AsyncConfigurer {
   @Bean(name = "taskExecutor")
   public Executor getAsyncExecutor() {
     ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-    executor.setCorePoolSize(10);
-    executor.setMaxPoolSize(60);
-    executor.setQueueCapacity(150);
+    executor.setCorePoolSize(50);
+    executor.setMaxPoolSize(100);
+    executor.setQueueCapacity(100);
+    executor.setThreadNamePrefix("TaskExecutor-");
     executor.initialize();
     return executor;
   }

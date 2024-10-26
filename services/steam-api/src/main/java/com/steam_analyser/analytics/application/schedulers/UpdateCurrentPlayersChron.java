@@ -2,6 +2,7 @@ package com.steam_analyser.analytics.application.schedulers;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.scheduling.TaskScheduler;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.steam_analyser.analytics.application.events.PlayerCountUpdatedEvent;
@@ -17,7 +18,6 @@ import in.dragonbra.javasteam.types.KeyValue;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
@@ -27,6 +27,9 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.lang.Math;
 import java.time.Duration;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ExecutorService;
 
 import static com.steam_analyser.analytics.api.routes.SteamRouteInterfaces.*;
 import static com.steam_analyser.analytics.api.routes.SteamRouteMethods.*;
@@ -38,8 +41,8 @@ public class UpdateCurrentPlayersChron implements ISteamChron {
 
   private final SteamAppService steamAppService;
   private final SteamAppStatsService steamAppStatsService;
-  private final Executor taskExecutor;
   private final Mediator mediator;
+  private final Executor executor = Executors.newFixedThreadPool(5);
   private final TaskScheduler taskScheduler;
   private SteamConfiguration steamConfiguration;
   private final Duration executionFrequency = Duration.ofMinutes(30);
@@ -56,7 +59,7 @@ public class UpdateCurrentPlayersChron implements ISteamChron {
 
   @Override
   public void run() {
-    System.out.println("aqui");
+    System.out.println("here");
     var steamAppsList = steamAppService.findAllSteamApps();
     var batches = partitionList(steamAppsList, processBatchSizeFor(steamAppsList));
 
@@ -86,7 +89,7 @@ public class UpdateCurrentPlayersChron implements ISteamChron {
 
       steamAppStatsService.saveMultiple(statsToSave);
       propagateSideEffects(toBePropagated);
-    }, taskExecutor);
+    }, executor);
   }
 
   private Integer retryQueryPlayerCountForApp(String steamAppId) {

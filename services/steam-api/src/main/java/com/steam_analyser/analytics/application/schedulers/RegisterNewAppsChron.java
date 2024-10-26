@@ -1,6 +1,7 @@
 package com.steam_analyser.analytics.application.schedulers;
 
 import org.springframework.scheduling.TaskScheduler;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.steam_analyser.analytics.api.presentation.externalResponses.SingleSteamApp;
@@ -12,11 +13,15 @@ import java.time.Duration;
 import in.dragonbra.javasteam.steam.steamclient.configuration.SteamConfiguration;
 import in.dragonbra.javasteam.types.KeyValue;
 import lombok.RequiredArgsConstructor;
+import java.util.concurrent.Executor;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ExecutorService;
 import java.util.stream.Collectors;
 
 import lombok.extern.slf4j.Slf4j;
@@ -29,9 +34,10 @@ import static com.steam_analyser.analytics.api.routes.SteamRouteMethods.*;
 @Slf4j
 public class RegisterNewAppsChron implements ISteamChron {
 
-  private final TaskScheduler taskScheduler;
   private final SteamAppService steamAppService;
   private SteamConfiguration steamConfiguration;
+  private final Executor executor = Executors.newFixedThreadPool(5);
+  private final TaskScheduler taskScheduler;
   private final Duration executionFrequency = Duration.ofMinutes(90);
 
   @Override
@@ -70,7 +76,7 @@ public class RegisterNewAppsChron implements ISteamChron {
         SteamAppModel newApp = new SteamAppModel(app.getName(), app.getAppId());
         steamAppService.saveAppAsync(newApp);
       }
-    });
+    }, executor);
   }
 
   private List<SingleSteamApp> parseSteamAppsResponse(KeyValue response) {
