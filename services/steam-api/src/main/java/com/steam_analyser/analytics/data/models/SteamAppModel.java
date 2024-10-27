@@ -24,4 +24,7 @@ public class SteamAppModel extends BaseModel {
 
   @Column
   private Integer steamAppId;
+
+  @Column
+  private String appImage;
 }

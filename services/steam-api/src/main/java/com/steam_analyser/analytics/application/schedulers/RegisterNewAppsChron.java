@@ -7,6 +7,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.steam_analyser.analytics.api.presentation.externalResponses.SingleSteamApp;
+import com.steam_analyser.analytics.application.services.CloudFlareService;
 import com.steam_analyser.analytics.application.services.ProfillingService;
 import com.steam_analyser.analytics.application.services.SteamAppService;
 import com.steam_analyser.analytics.data.models.SteamAppModel;
@@ -40,17 +41,20 @@ public class RegisterNewAppsChron implements ISteamChron {
   private ProfillingService profillingService;
   private TaskScheduler taskScheduler;
   private Executor executor;
+  private CloudFlareService cloudFlareService;
 
   private final Duration executionFrequency = Duration.ofMinutes(90);
 
   public RegisterNewAppsChron(
       @Qualifier("sharedTaskScheduler") TaskScheduler taskScheduler,
       SteamAppService steamAppService,
-      ProfillingService profillingService) {
+      ProfillingService profillingService,
+      CloudFlareService cloudFlareService) {
     this.steamAppService = steamAppService;
     this.profillingService = profillingService;
     this.taskScheduler = taskScheduler;
     this.executor = Executors.newFixedThreadPool(16);
+    this.cloudFlareService = cloudFlareService;
   }
 
   @Override
@@ -89,9 +93,10 @@ public class RegisterNewAppsChron implements ISteamChron {
 
   private CompletableFuture<Void> createOrPassAsync(final SingleSteamApp app) {
     return CompletableFuture.runAsync(() -> {
+      final String appHeaderUrl = cloudFlareService.buildAppHeaderUrl(app.getAppId());
       Optional<SteamAppModel> storedApp = steamAppService.findAppBySteamAppId(app.getAppId());
       if (storedApp.isEmpty()) {
-        SteamAppModel newApp = new SteamAppModel(app.getName(), app.getAppId());
+        SteamAppModel newApp = new SteamAppModel(app.getName(), app.getAppId(), appHeaderUrl);
         steamAppService.saveOne(newApp);
       }
     }, executor);

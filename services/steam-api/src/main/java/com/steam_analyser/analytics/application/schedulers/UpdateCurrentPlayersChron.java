@@ -67,7 +67,7 @@ public class UpdateCurrentPlayersChron implements ISteamChron {
   @Override
   public void start(final SteamConfiguration steamConfiguration) {
     this.steamConfiguration = steamConfiguration;
-    taskScheduler.scheduleAtFixedRate(this::run, executionFrequency);
+    // taskScheduler.scheduleAtFixedRate(this::run, executionFrequency);
     log.info("Executing task: \"" + getChronName() + "\"");
   }
 
