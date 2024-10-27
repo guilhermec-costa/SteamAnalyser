@@ -53,7 +53,7 @@ public class RegisterNewAppsChron implements ISteamChron {
   @Override
   public void start(final SteamConfiguration steamConfiguration) {
     this.steamConfiguration = steamConfiguration;
-    taskScheduler.scheduleAtFixedRate(this::run, executionFrequency);
+    // taskScheduler.scheduleAtFixedRate(this::run, executionFrequency);
     log.info("Executing task: \"" + getChronName() + "\"");
   }
 
@@ -64,9 +64,8 @@ public class RegisterNewAppsChron implements ISteamChron {
       return;
 
     var start = profillingService.getNow();
-    List<CompletableFuture<Void>> futures =
-    parsedApps.stream().map(this::createOrPassAsync)
-    .collect(Collectors.toList());
+    List<CompletableFuture<Void>> futures = parsedApps.stream().map(this::createOrPassAsync)
+        .collect(Collectors.toList());
     CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
 
     var end = profillingService.getNow();

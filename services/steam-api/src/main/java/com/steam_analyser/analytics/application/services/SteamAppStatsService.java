@@ -29,7 +29,7 @@ public class SteamAppStatsService {
     return steamAppStatsStore.findBySteamAppId(localSteamAppId);
   }
 
-  public SteamAppStatsModel save(SteamAppStatsModel appStat) {
+  public SteamAppStatsModel saveOne(SteamAppStatsModel appStat) {
     return steamAppStatsStore.save(appStat);
   }
 
@@ -48,7 +48,7 @@ public class SteamAppStatsService {
       var appInstance = app.get();
       Integer _24peak = steamAppStatsHistoryService.queryApp24peak(localAppId);
       appInstance.set_24hpeak(_24peak);
-      save(appInstance);
+      saveOne(appInstance);
     }
   }
 

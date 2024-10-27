@@ -41,4 +41,8 @@ public class SteamAppStatsHistoryService {
   public void saveMultiple(final List<SteamAppStatsHistoryModel> list) {
     steamAppStatsHistoryStore.saveAll(list);
   }
+
+  public void saveOne(final SteamAppStatsHistoryModel instance) {
+    steamAppStatsHistoryStore.save(instance);
+  }
 }

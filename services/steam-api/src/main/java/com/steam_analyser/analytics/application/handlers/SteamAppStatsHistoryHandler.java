@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import com.steam_analyser.analytics.application.events.PlayerCountUpdatedEvent;
+import com.steam_analyser.analytics.application.events.PlayerCountBatchUpdatedEvent;
 import com.steam_analyser.analytics.application.services.SteamAppStatsHistoryService;
 import com.steam_analyser.analytics.application.services.SteamAppStatsService;
 
@@ -12,7 +12,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Service
-public class SteamAppStatsHistoryHandler implements Handler<PlayerCountUpdatedEvent> {
+public class SteamAppStatsHistoryHandler implements Handler<PlayerCountBatchUpdatedEvent> {
 
   private final SteamAppStatsHistoryService steamAppStatsHistoryService;
   private final SteamAppStatsService steamAppStatsService;
@@ -20,11 +20,11 @@ public class SteamAppStatsHistoryHandler implements Handler<PlayerCountUpdatedEv
 
   @Override
   public String getEventName() {
-    return PlayerCountUpdatedEvent.class.getName();
+    return PlayerCountBatchUpdatedEvent.class.getName();
   }
 
   @Override
-  public void handle(PlayerCountUpdatedEvent event) {
+  public void handle(PlayerCountBatchUpdatedEvent event) {
     var historyInstances = steamAppStatsHistoryService.mountListFromPartials(event.getDesynchoronizedBatch());
     for (var history : historyInstances) {
       steamAppStatsService.updateApp24Peak(history.getSteamApp().getId());
