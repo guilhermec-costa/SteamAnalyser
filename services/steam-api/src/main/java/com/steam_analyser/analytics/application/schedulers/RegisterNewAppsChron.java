@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 import lombok.extern.slf4j.Slf4j;
@@ -38,6 +39,7 @@ public class RegisterNewAppsChron implements ISteamChron {
   private SteamConfiguration steamConfiguration;
   private ProfillingService profillingService;
   private TaskScheduler taskScheduler;
+  private Executor executor;
 
   private final Duration executionFrequency = Duration.ofMinutes(90);
 
@@ -48,12 +50,13 @@ public class RegisterNewAppsChron implements ISteamChron {
     this.steamAppService = steamAppService;
     this.profillingService = profillingService;
     this.taskScheduler = taskScheduler;
+    this.executor = Executors.newFixedThreadPool(16);
   }
 
   @Override
   public void start(final SteamConfiguration steamConfiguration) {
     this.steamConfiguration = steamConfiguration;
-    // taskScheduler.scheduleAtFixedRate(this::run, executionFrequency);
+    taskScheduler.scheduleAtFixedRate(this::run, executionFrequency);
     log.info("Executing task: \"" + getChronName() + "\"");
   }
 
@@ -91,7 +94,7 @@ public class RegisterNewAppsChron implements ISteamChron {
         SteamAppModel newApp = new SteamAppModel(app.getName(), app.getAppId());
         steamAppService.saveOne(newApp);
       }
-    });
+    }, executor);
   }
 
   private List<SingleSteamApp> parseSteamAppsResponse(KeyValue response) {
@@ -101,7 +104,7 @@ public class RegisterNewAppsChron implements ISteamChron {
       var appContent = app.getChildren();
       var appId = appContent.get(0).getValue();
       var appName = appContent.get(1).getValue();
-      parsedApps.add(new SingleSteamApp(appId, appName));
+      parsedApps.add(new SingleSteamApp(Integer.parseInt(appId), appName));
     }
     return parsedApps;
   }

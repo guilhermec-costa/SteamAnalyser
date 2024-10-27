@@ -9,14 +9,15 @@ import com.steam_analyser.analytics.application.services.SteamAppStatsHistorySer
 import com.steam_analyser.analytics.application.services.SteamAppStatsService;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RequiredArgsConstructor
+@Slf4j
 @Service
-public class SteamAppStatsHistoryHandler implements Handler<PlayerCountBatchUpdatedEvent> {
+public class AppBatchPlayerCountUpdatedHandler implements Handler<PlayerCountBatchUpdatedEvent> {
 
   private final SteamAppStatsHistoryService steamAppStatsHistoryService;
   private final SteamAppStatsService steamAppStatsService;
-  private Logger logger = LoggerFactory.getLogger(getClass());
 
   @Override
   public String getEventName() {
@@ -30,7 +31,7 @@ public class SteamAppStatsHistoryHandler implements Handler<PlayerCountBatchUpda
       steamAppStatsService.updateApp24Peak(history.getSteamApp().getId());
     }
     steamAppStatsHistoryService.saveMultiple(historyInstances);
-    logger.info("PlayerCountUpdatedEvent computed!");
+    log.info("PlayerCountUpdatedEvent computed!");
   }
 
 }

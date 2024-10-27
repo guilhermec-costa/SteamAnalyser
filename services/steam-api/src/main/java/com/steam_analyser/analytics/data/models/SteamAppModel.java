@@ -2,6 +2,7 @@ package com.steam_analyser.analytics.data.models;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Index;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,12 +16,12 @@ import lombok.Setter;
 @Setter
 @Builder
 @Entity
-@Table(name = "steam_app")
+@Table(name = "steam_app", indexes = @Index(name = "steam_app_id_idx", columnList = "steam_app_id"))
 public class SteamAppModel extends BaseModel {
-  
+
   @Column
   private String name;
 
   @Column
-  private String steamAppId;
+  private Integer steamAppId;
 }

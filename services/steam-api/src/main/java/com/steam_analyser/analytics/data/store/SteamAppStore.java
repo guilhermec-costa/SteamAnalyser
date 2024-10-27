@@ -16,5 +16,5 @@ public interface SteamAppStore extends JpaRepository<SteamAppModel, Long> {
   @Query("select sa from SteamAppModel sa order by sa.id")
   public List<SteamAppModel> findNElements(Pageable pageable);
 
-  public Optional<SteamAppModel> findBySteamAppId(String steamAppId);
+  public Optional<SteamAppModel> findBySteamAppId(Integer steamAppId);
 }

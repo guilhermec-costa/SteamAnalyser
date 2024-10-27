@@ -42,7 +42,7 @@ public class UpdateCurrentPlayersChron implements ISteamChron {
   private Mediator mediator;
   private TaskScheduler taskScheduler;
   private ProfillingService profillingService;
-  private final Executor executor = Executors.newFixedThreadPool(80);
+  private Executor executor;
 
   public UpdateCurrentPlayersChron(
       SteamAppService steamAppService,
@@ -55,6 +55,7 @@ public class UpdateCurrentPlayersChron implements ISteamChron {
     this.mediator = mediator;
     this.taskScheduler = taskScheduler;
     this.profillingService = profillingService;
+    executor = Executors.newFixedThreadPool(32);
   }
 
   private SteamConfiguration steamConfiguration;
@@ -73,18 +74,11 @@ public class UpdateCurrentPlayersChron implements ISteamChron {
   @Override
   public void run() {
     var steamAppsList = steamAppService.findAllSteamApps();
-    // var batches = partitionList(steamAppsList, processBatchSizeFor(steamAppsList));
 
     var start = profillingService.getNow();
 
     List<CompletableFuture<Void>> updateFutures = steamAppsList.stream().map(this::processAppUnitPararelly)
         .collect(Collectors.toList());
-
-    // List<CompletableFuture<Void>> futures = batches.stream()
-    //     .map(this::processBatchParallely)
-    //     .collect(Collectors.toList());
-
-    // CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
 
     CompletableFuture.allOf(updateFutures.toArray(new CompletableFuture[0])).join();
     var end = profillingService.getNow();
@@ -132,14 +126,14 @@ public class UpdateCurrentPlayersChron implements ISteamChron {
     }, executor);
   }
 
-  private Integer retryQueryPlayerCountForApp(String steamAppId) {
+  private Integer retryQueryPlayerCountForApp(Integer steamAppId) {
     int currentAttempts = 0;
     int backoff = initialBackoff;
 
     while (currentAttempts < retryLimit) {
       try {
         Map<String, String> args = new HashMap<>();
-        args.put("appid", steamAppId);
+        args.put("appid", steamAppId.toString());
 
         var currentPlayersResponse = steamConfiguration.getWebAPI(ISteamUserStats.string)
             .call("GET", GetNumberOfCurrentPlayers.string, GetNumberOfCurrentPlayers.version, args);

@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class SingleSteamApp {
 
-  private String appId;
+  private Integer appId;
   private String name;
 
 }

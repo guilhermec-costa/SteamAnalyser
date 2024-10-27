@@ -43,7 +43,7 @@ public class SteamAppService {
         .orElseThrow(() -> new IllegalArgumentException("App does not exist"));
   }
 
-  public Optional<SteamAppModel> findAppBySteamAppId(final String steamAppId) {
+  public Optional<SteamAppModel> findAppBySteamAppId(final Integer steamAppId) {
     return steamAppStore.findBySteamAppId(steamAppId);
   }
 
