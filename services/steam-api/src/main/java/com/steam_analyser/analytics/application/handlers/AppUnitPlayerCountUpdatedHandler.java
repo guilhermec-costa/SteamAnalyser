@@ -1,6 +1,5 @@
 package com.steam_analyser.analytics.application.handlers;
 
-import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 
 import com.steam_analyser.analytics.application.events.PlayerCountUnitUpdatedEvent;
@@ -26,8 +25,9 @@ public class AppUnitPlayerCountUpdatedHandler implements Handler<PlayerCountUnit
   @Override
   public void handle(PlayerCountUnitUpdatedEvent event) {
     var historyInstance = steamAppStatsHistoryService.mountFromPartial(event.getAppHistoryArg());
-    steamAppStatsService.updateApp24Peak(historyInstance.getSteamApp().getId());
     steamAppStatsHistoryService.saveOne(historyInstance);
+
+    steamAppStatsService.updateApp24Peak(historyInstance.getSteamApp().getId());
   }
 
 }

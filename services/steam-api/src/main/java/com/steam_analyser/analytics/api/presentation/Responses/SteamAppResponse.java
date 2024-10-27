@@ -10,10 +10,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SteamAppResponse {
- 
+
   @JsonProperty("steam_app_id")
   private String steamAppId;
 
   @JsonProperty("name")
   private String name;
+
+  @JsonProperty("appHeader")
+  private String appImage;
 }

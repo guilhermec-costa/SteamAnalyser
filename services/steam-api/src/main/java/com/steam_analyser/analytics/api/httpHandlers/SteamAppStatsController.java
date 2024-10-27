@@ -10,8 +10,6 @@ import com.steam_analyser.analytics.application.services.SteamAppStatsService;
 
 import lombok.RequiredArgsConstructor;
 
-import java.util.List;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -36,7 +34,7 @@ public class SteamAppStatsController {
     return ResponseEntity.ok().body(response);
   }
 
-  @GetMapping("topBy")
+  @GetMapping("top")
   public ResponseEntity<Page<SteamAppStatsResponse>> getTopByCurrentPlayers(Pageable pageable) {
     var appsStats = steamAppStatsService.listBy(pageable);
     var parsedResponse = modelMappingService.mapList(appsStats.toList(), SteamAppStatsResponse.class);

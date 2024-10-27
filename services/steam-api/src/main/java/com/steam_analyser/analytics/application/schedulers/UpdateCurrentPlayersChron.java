@@ -1,7 +1,6 @@
 package com.steam_analyser.analytics.application.schedulers;
 
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
@@ -55,7 +54,7 @@ public class UpdateCurrentPlayersChron implements ISteamChron {
     this.mediator = mediator;
     this.taskScheduler = taskScheduler;
     this.profillingService = profillingService;
-    executor = Executors.newFixedThreadPool(32);
+    executor = Executors.newFixedThreadPool(48);
   }
 
   private SteamConfiguration steamConfiguration;
@@ -67,7 +66,7 @@ public class UpdateCurrentPlayersChron implements ISteamChron {
   @Override
   public void start(final SteamConfiguration steamConfiguration) {
     this.steamConfiguration = steamConfiguration;
-    // taskScheduler.scheduleAtFixedRate(this::run, executionFrequency);
+    taskScheduler.scheduleAtFixedRate(this::run, executionFrequency);
     log.info("Executing task: \"" + getChronName() + "\"");
   }
 
@@ -89,12 +88,12 @@ public class UpdateCurrentPlayersChron implements ISteamChron {
   private CompletableFuture<Void> processAppUnitPararelly(SteamAppModel app) {
     return CompletableFuture.runAsync(() -> {
       SteamAppStatsModel actUponAppStats = steamAppStatsService.findOrCreateStatsModelInstance(app);
-      Integer playerCount = retryQueryPlayerCountForApp(app.getSteamAppId());
+      Integer newPlayerCount = retryQueryPlayerCountForApp(app.getSteamAppId());
 
-      if (playerCount != null) {
-        actUponAppStats.updateCurrentPlayers(playerCount);
+      if (steamAppStatsService.canUpdateAppStatsPlayerCount(actUponAppStats, newPlayerCount)) {
+        actUponAppStats.updateCurrentPlayers(newPlayerCount);
         steamAppStatsService.saveOne(actUponAppStats);
-        var sideEffectArg = new PartialSteamAppStatsHistory(app, playerCount, getExecutionDate());
+        var sideEffectArg = new PartialSteamAppStatsHistory(app, newPlayerCount, getExecutionDate());
         mediator.publish(new PlayerCountUnitUpdatedEvent(sideEffectArg));
       }
     }, executor);
@@ -109,7 +108,7 @@ public class UpdateCurrentPlayersChron implements ISteamChron {
         SteamAppStatsModel actUponAppStats = steamAppStatsService.findOrCreateStatsModelInstance(nextApp);
         Integer playerCount = retryQueryPlayerCountForApp(nextApp.getSteamAppId());
 
-        if (playerCount != null) {
+        if (steamAppStatsService.canUpdateAppStatsPlayerCount(actUponAppStats, playerCount)) {
           actUponAppStats.updateCurrentPlayers(playerCount);
           statsToSave.add(actUponAppStats);
           toBePropagated.add(new PartialSteamAppStatsHistory(nextApp, playerCount, getExecutionDate()));

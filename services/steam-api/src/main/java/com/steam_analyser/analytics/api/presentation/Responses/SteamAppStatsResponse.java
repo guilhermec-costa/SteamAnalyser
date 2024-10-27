@@ -18,12 +18,15 @@ public class SteamAppStatsResponse {
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
   private LocalDateTime updatedAt;
 
-  @JsonProperty("_24peak")
-  private int _24peak;
+  @JsonProperty("_24hpeak")
+  private Integer _24hpeak;
 
   @JsonProperty("current_players")
   private Integer currentPlayers;
 
   @JsonProperty("name")
   private String name;
+
+  @JsonProperty("appImage")
+  private String appImage;
 }

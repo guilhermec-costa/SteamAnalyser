@@ -17,7 +17,7 @@ public interface SteamAppStatsStore extends JpaRepository<SteamAppStatsModel, Lo
   Optional<SteamAppStatsModel> findBySteamAppId(Long localSteamAppId);
 
   @Query(value = """
-      select sacs.updated_at, sacs."_24hpeak", sacs.current_players, sa."name"
+      select sacs.updated_at, sacs._24hpeak, sacs.current_players, sa."name", sa.app_image
       from steam_app_current_stats sacs
       inner join steam_app sa on sa.id = sacs.local_steam_app_id
       where sacs.current_players > 0

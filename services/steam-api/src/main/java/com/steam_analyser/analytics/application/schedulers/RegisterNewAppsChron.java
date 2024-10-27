@@ -1,9 +1,7 @@
 package com.steam_analyser.analytics.application.schedulers;
 
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.lang.NonNull;
 import org.springframework.scheduling.TaskScheduler;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.steam_analyser.analytics.api.presentation.externalResponses.SingleSteamApp;
@@ -11,13 +9,11 @@ import com.steam_analyser.analytics.application.services.CloudFlareService;
 import com.steam_analyser.analytics.application.services.ProfillingService;
 import com.steam_analyser.analytics.application.services.SteamAppService;
 import com.steam_analyser.analytics.data.models.SteamAppModel;
-import com.steam_analyser.analytics.util.ThreadUtil;
 
 import java.time.Duration;
 
 import in.dragonbra.javasteam.steam.steamclient.configuration.SteamConfiguration;
 import in.dragonbra.javasteam.types.KeyValue;
-import lombok.RequiredArgsConstructor;
 import java.util.concurrent.Executor;
 
 import java.util.ArrayList;
@@ -60,7 +56,7 @@ public class RegisterNewAppsChron implements ISteamChron {
   @Override
   public void start(final SteamConfiguration steamConfiguration) {
     this.steamConfiguration = steamConfiguration;
-    taskScheduler.scheduleAtFixedRate(this::run, executionFrequency);
+    // taskScheduler.scheduleAtFixedRate(this::run, executionFrequency);
     log.info("Executing task: \"" + getChronName() + "\"");
   }
 

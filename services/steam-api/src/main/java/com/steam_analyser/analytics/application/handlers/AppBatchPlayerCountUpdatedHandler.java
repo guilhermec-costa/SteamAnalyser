@@ -1,7 +1,5 @@
 package com.steam_analyser.analytics.application.handlers;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.steam_analyser.analytics.application.events.PlayerCountBatchUpdatedEvent;

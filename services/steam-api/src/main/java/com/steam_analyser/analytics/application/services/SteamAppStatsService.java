@@ -1,8 +1,6 @@
 package com.steam_analyser.analytics.application.services;
 
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.Comparator;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -35,7 +33,9 @@ public class SteamAppStatsService {
 
   public SteamAppStatsModel findOrCreateStatsModelInstance(SteamAppModel app) {
     return findAppStatsByAppRegisterId(app.getId())
-        .orElse(SteamAppStatsModel.builder().steamApp(app).build());
+        .orElse(
+            SteamAppStatsModel.builder().steamApp(app).currentPlayers(0)
+                .build());
   }
 
   public void saveMultiple(List<SteamAppStatsModel> list) {
@@ -61,5 +61,14 @@ public class SteamAppStatsService {
 
   public Page<SteamAppStatsProjection> listBy(Pageable pageable) {
     return steamAppStatsStore.presentAppsStatsQuery(pageable);
+  }
+
+  private final float MIN_ANOMALOUS_COUNT_PCT = 0.7F;
+  private final float MAX_ANOMALOUS_COUNT_PCT = 0.7F;
+
+  public boolean canUpdateAppStatsPlayerCount(final SteamAppStatsModel appStats, Integer newCount) {
+    final Integer lastCount = appStats.getCurrentPlayers();
+    return (newCount != null && (lastCount == 0
+        || (newCount >= lastCount * MIN_ANOMALOUS_COUNT_PCT && newCount <= lastCount * MAX_ANOMALOUS_COUNT_PCT)));
   }
 }
