@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import com.steam_analyser.analytics.data.models.SteamAppStatsModel;
 import com.steam_analyser.analytics.data.projections.SteamAppStatsProjection;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -23,4 +24,11 @@ public interface SteamAppStatsStore extends JpaRepository<SteamAppStatsModel, Lo
       where sacs.current_players > 0
       """, nativeQuery = true)
   Page<SteamAppStatsProjection> presentAppsStatsQuery(Pageable pageable);
+
+  @Query(value = """
+      select sacs.current_players, sa.steam_app_id from steam_app_current_stats sacs
+      inner join steam_app sa on sa.id = sacs.local_steam_app_id 
+      order by sacs.current_players desc
+      """, nativeQuery = true)
+  List<SteamAppStatsProjection> findAllByCurrentPlayersPriority(Pageable pageable);
 }

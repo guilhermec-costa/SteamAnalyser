@@ -36,7 +36,7 @@ public class SteamAppStatsController {
 
   @GetMapping("top")
   public ResponseEntity<Page<SteamAppStatsResponse>> getTopByCurrentPlayers(Pageable pageable) {
-    var appsStats = steamAppStatsService.listBy(pageable);
+    var appsStats = steamAppStatsService.presentAppsStats(pageable);
     var parsedResponse = modelMappingService.mapList(appsStats.toList(), SteamAppStatsResponse.class);
     var page = new PageImpl<>(parsedResponse, pageable, parsedResponse.size());
     return ResponseEntity.ok().body(page);

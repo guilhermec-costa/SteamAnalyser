@@ -59,7 +59,7 @@ public class SteamAppStatsService {
     return app.getCurrentPlayers();
   }
 
-  public Page<SteamAppStatsProjection> listBy(Pageable pageable) {
+  public Page<SteamAppStatsProjection> presentAppsStats(Pageable pageable) {
     return steamAppStatsStore.presentAppsStatsQuery(pageable);
   }
 

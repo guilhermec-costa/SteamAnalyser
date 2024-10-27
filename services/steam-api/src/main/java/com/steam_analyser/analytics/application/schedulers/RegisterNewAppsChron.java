@@ -35,29 +35,28 @@ public class RegisterNewAppsChron implements ISteamChron {
   private SteamAppService steamAppService;
   private SteamConfiguration steamConfiguration;
   private ProfillingService profillingService;
-  private TaskScheduler taskScheduler;
   private Executor executor;
   private CloudFlareService cloudFlareService;
+  private SchedulerManager schedulerManager;
 
   private final Duration executionFrequency = Duration.ofMinutes(90);
 
   public RegisterNewAppsChron(
-      @Qualifier("sharedTaskScheduler") TaskScheduler taskScheduler,
       SteamAppService steamAppService,
       ProfillingService profillingService,
-      CloudFlareService cloudFlareService) {
+      CloudFlareService cloudFlareService,
+      SchedulerManager schedulerManager) {
     this.steamAppService = steamAppService;
     this.profillingService = profillingService;
-    this.taskScheduler = taskScheduler;
     this.executor = Executors.newFixedThreadPool(16);
     this.cloudFlareService = cloudFlareService;
+    this.schedulerManager = schedulerManager;
   }
 
   @Override
   public void start(final SteamConfiguration steamConfiguration) {
     this.steamConfiguration = steamConfiguration;
-    // taskScheduler.scheduleAtFixedRate(this::run, executionFrequency);
-    log.info("Executing task: \"" + getChronName() + "\"");
+    schedulerManager.scheduleChronIfAllowed(this);
   }
 
   @Override
@@ -113,5 +112,10 @@ public class RegisterNewAppsChron implements ISteamChron {
   @Override
   public String getChronName() {
     return getClass().getName();
+  }
+
+  @Override
+  public Duration getExecutionFrequency() {
+    return this.executionFrequency;
   }
 }

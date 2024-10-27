@@ -34,27 +34,28 @@ import static com.steam_analyser.analytics.api.routes.SteamRouteMethods.*;
 
 @Component
 @Slf4j
-public class UpdateCurrentPlayersChron implements ISteamChron {
+public class UpdatePlayersForNonPriorityAppsChron implements ISteamChron {
 
   private SteamAppService steamAppService;
   private SteamAppStatsService steamAppStatsService;
   private Mediator mediator;
   private TaskScheduler taskScheduler;
+  private SchedulerManager schedulerManager;
   private ProfillingService profillingService;
   private Executor executor;
 
-  public UpdateCurrentPlayersChron(
+  public UpdatePlayersForNonPriorityAppsChron(
       SteamAppService steamAppService,
       SteamAppStatsService steamAppStatsService,
       Mediator mediator,
-      @Qualifier("sharedTaskScheduler") TaskScheduler taskScheduler,
-      ProfillingService profillingService) {
+      ProfillingService profillingService,
+      SchedulerManager schedulerManager) {
     this.steamAppService = steamAppService;
     this.steamAppStatsService = steamAppStatsService;
     this.mediator = mediator;
-    this.taskScheduler = taskScheduler;
     this.profillingService = profillingService;
     executor = Executors.newFixedThreadPool(48);
+    this.schedulerManager = schedulerManager;
   }
 
   private SteamConfiguration steamConfiguration;
@@ -66,14 +67,12 @@ public class UpdateCurrentPlayersChron implements ISteamChron {
   @Override
   public void start(final SteamConfiguration steamConfiguration) {
     this.steamConfiguration = steamConfiguration;
-    taskScheduler.scheduleAtFixedRate(this::run, executionFrequency);
-    log.info("Executing task: \"" + getChronName() + "\"");
+    schedulerManager.scheduleChronIfAllowed(this);
   }
 
   @Override
   public void run() {
     var steamAppsList = steamAppService.findAllSteamApps();
-
     var start = profillingService.getNow();
 
     List<CompletableFuture<Void>> updateFutures = steamAppsList.stream().map(this::processAppUnitPararelly)
@@ -184,5 +183,10 @@ public class UpdateCurrentPlayersChron implements ISteamChron {
       partitionContainer.add(singlePartition);
     }
     return partitionContainer;
+  }
+
+  @Override
+  public Duration getExecutionFrequency() {
+    return this.executionFrequency;
   }
 }
