@@ -65,10 +65,9 @@ public class SteamAppStatsService {
   }
 
   private final float MIN_ANOMALOUS_COUNT_PCT = 0.7F;
-  private final float MAX_ANOMALOUS_COUNT_PCT = 0.7F;
+  private final float MAX_ANOMALOUS_COUNT_PCT = 1.7F;
 
-  public boolean canUpdateAppStatsPlayerCount(final SteamAppStatsModel appStats, Integer newCount) {
-    final Integer lastCount = appStats.getCurrentPlayers();
+  public boolean canUpdateAppStatsPlayerCount(final Integer lastCount, Integer newCount) {
     return (newCount != null && (lastCount == 0
         || (newCount >= lastCount * MIN_ANOMALOUS_COUNT_PCT && newCount <= lastCount * MAX_ANOMALOUS_COUNT_PCT)));
   }

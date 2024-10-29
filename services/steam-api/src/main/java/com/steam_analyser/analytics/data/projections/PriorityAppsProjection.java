@@ -6,4 +6,6 @@ public interface PriorityAppsProjection {
   Long getId();
 
   String getName();
+
+  Integer getSteamAppId();
 }

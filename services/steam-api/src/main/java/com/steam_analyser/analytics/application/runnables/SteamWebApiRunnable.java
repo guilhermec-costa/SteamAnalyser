@@ -51,10 +51,9 @@ public class SteamWebApiRunnable implements Runnable {
   private Logger logger = LoggerFactory.getLogger(getClass());
 
   public SteamWebApiRunnable(
-      SteamSecretsProperties steamSecrets, 
+      SteamSecretsProperties steamSecrets,
       List<ISteamChron> steamChrons,
-      SteamWebAPIService steamWebAPIService
-  ) {
+      SteamWebAPIService steamWebAPIService) {
     this.username = steamSecrets.getUsername();
     this.password = steamSecrets.getPassword();
     this.scanner = new Scanner(System.in);

@@ -28,7 +28,7 @@ import java.time.Duration;
 @RequiredArgsConstructor
 @Component
 @Slf4j
-public class UpdatePlayersForNonPriorityAppsChron implements ISteamChron {
+public class UpdatePlayersForAllAppsChron implements ISteamChron {
 
   private final SteamAppService steamAppService;
   private final SteamWebAPIService steamWebAPIService;
@@ -64,7 +64,7 @@ public class UpdatePlayersForNonPriorityAppsChron implements ISteamChron {
       SteamAppStatsModel actUponAppStats = steamAppStatsService.findOrCreateStatsModelInstance(app);
       Integer newPlayerCount = steamWebAPIService.retryQueryPlayerCountForApp(app.getSteamAppId());
 
-      if (steamAppStatsService.canUpdateAppStatsPlayerCount(actUponAppStats, newPlayerCount)) {
+      if (steamAppStatsService.canUpdateAppStatsPlayerCount(actUponAppStats.getCurrentPlayers(), newPlayerCount)) {
         actUponAppStats.updateCurrentPlayers(newPlayerCount);
         steamAppStatsService.saveOne(actUponAppStats);
         var sideEffectArg = new PartialSteamAppStatsHistory(app, newPlayerCount, getExecutionDate());
@@ -82,7 +82,7 @@ public class UpdatePlayersForNonPriorityAppsChron implements ISteamChron {
         SteamAppStatsModel actUponAppStats = steamAppStatsService.findOrCreateStatsModelInstance(nextApp);
         Integer playerCount = steamWebAPIService.retryQueryPlayerCountForApp(nextApp.getSteamAppId());
 
-        if (steamAppStatsService.canUpdateAppStatsPlayerCount(actUponAppStats, playerCount)) {
+        if (steamAppStatsService.canUpdateAppStatsPlayerCount(actUponAppStats.getCurrentPlayers(), playerCount)) {
           actUponAppStats.updateCurrentPlayers(playerCount);
           statsToSave.add(actUponAppStats);
           toBePropagated.add(new PartialSteamAppStatsHistory(nextApp, playerCount, getExecutionDate()));

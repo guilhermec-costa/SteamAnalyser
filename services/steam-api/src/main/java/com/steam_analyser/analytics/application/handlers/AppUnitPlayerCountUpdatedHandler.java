@@ -26,7 +26,6 @@ public class AppUnitPlayerCountUpdatedHandler implements Handler<PlayerCountUnit
   public void handle(PlayerCountUnitUpdatedEvent event) {
     var historyInstance = steamAppStatsHistoryService.mountFromPartial(event.getAppHistoryArg());
     steamAppStatsHistoryService.saveOne(historyInstance);
-
     steamAppStatsService.updateApp24Peak(historyInstance.getSteamApp().getId());
   }
 
