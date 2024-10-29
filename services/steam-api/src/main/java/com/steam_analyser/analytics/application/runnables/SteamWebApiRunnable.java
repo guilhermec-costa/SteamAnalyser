@@ -29,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.steam_analyser.analytics.application.schedulers.ISteamChron;
+import com.steam_analyser.analytics.application.services.SteamWebAPIService;
 import com.steam_analyser.analytics.infra.config.SteamSecretsProperties;
 
 import java.util.List;
@@ -45,16 +46,22 @@ public class SteamWebApiRunnable implements Runnable {
   private String previouslyStoredGuardData;
   private String authToken;
   private Scanner scanner;
+  private SteamWebAPIService steamWebAPIService;
   private List<ISteamChron> futureChrons;
   private Logger logger = LoggerFactory.getLogger(getClass());
 
-  public SteamWebApiRunnable(SteamSecretsProperties steamSecrets, List<ISteamChron> steamChrons) {
+  public SteamWebApiRunnable(
+      SteamSecretsProperties steamSecrets, 
+      List<ISteamChron> steamChrons,
+      SteamWebAPIService steamWebAPIService
+  ) {
     this.username = steamSecrets.getUsername();
     this.password = steamSecrets.getPassword();
     this.scanner = new Scanner(System.in);
     this.authToken = loadGuardData();
     futureChrons = steamChrons;
     this.steamSecrets = steamSecrets;
+    this.steamWebAPIService = steamWebAPIService;
   }
 
   @Override
@@ -159,11 +166,11 @@ public class SteamWebApiRunnable implements Runnable {
     }
 
     logger.info("Successfully logged on!");
-    var steamConfiguration = steamClient.getConfiguration();
+    steamWebAPIService.setSteamConfiguration(steamClient.getConfiguration());
 
     logger.info("Starting chron jobs");
     for (var chron : futureChrons) {
-      chron.start(steamConfiguration);
+      chron.start();
     }
   }
 

@@ -5,6 +5,7 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
 import com.steam_analyser.analytics.application.schedulers.ISteamChron;
+import com.steam_analyser.analytics.application.services.SteamWebAPIService;
 import com.steam_analyser.analytics.infra.config.SteamSecretsProperties;
 
 import in.dragonbra.javasteam.util.log.DefaultLogListener;
@@ -17,13 +18,14 @@ import lombok.RequiredArgsConstructor;
 public class SteamWebAPIThreadStarter implements ApplicationRunner {
 
   private final SteamSecretsProperties steamSecretsProperties;
+  private final SteamWebAPIService steamWebAPIService;
   private final List<ISteamChron> steamChrons;
   private Thread webApiThread;
 
   @Override
   public void run(ApplicationArguments args) throws Exception {
     LogManager.addListener(new DefaultLogListener());
-    webApiThread = new Thread(new SteamWebApiRunnable(steamSecretsProperties, steamChrons));
+    webApiThread = new Thread(new SteamWebApiRunnable(steamSecretsProperties, steamChrons, steamWebAPIService));
     webApiThread.start();
   }
 

@@ -25,13 +25,13 @@ public class SchedulerManager implements ApplicationRunner {
   @Override
   public void run(ApplicationArguments args) {
     chronControllers.put(RegisterNewAppsChron.class.getName(),
-        new HashMap<>(Map.of(ChronControllerFlags.SHOULD_RUN, false)));
+        new HashMap<>(Map.of(ChronControllerFlags.SHOULD_RUN, true)));
 
     chronControllers.put(UpdatePlayersForPriorityAppsChron.class.getName(),
         new HashMap<>(Map.of(ChronControllerFlags.SHOULD_RUN, true)));
 
     chronControllers.put(UpdatePlayersForNonPriorityAppsChron.class.getName(),
-        new HashMap<>(Map.of(ChronControllerFlags.SHOULD_RUN, true)));
+        new HashMap<>(Map.of(ChronControllerFlags.SHOULD_RUN, false)));
 
   }
 

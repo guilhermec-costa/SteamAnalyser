@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.steam_analyser.analytics.data.models.SteamAppModel;
 import com.steam_analyser.analytics.data.models.SteamAppStatsModel;
+import com.steam_analyser.analytics.data.projections.PriorityAppsProjection;
 import com.steam_analyser.analytics.data.projections.SteamAppStatsProjection;
 import com.steam_analyser.analytics.data.store.SteamAppStatsStore;
 
@@ -70,5 +71,9 @@ public class SteamAppStatsService {
     final Integer lastCount = appStats.getCurrentPlayers();
     return (newCount != null && (lastCount == 0
         || (newCount >= lastCount * MIN_ANOMALOUS_COUNT_PCT && newCount <= lastCount * MAX_ANOMALOUS_COUNT_PCT)));
+  }
+
+  public Page<PriorityAppsProjection> queryByPlayersPriority(Pageable pageable) {
+    return steamAppStatsStore.findByPlayersPriority(pageable);
   }
 }

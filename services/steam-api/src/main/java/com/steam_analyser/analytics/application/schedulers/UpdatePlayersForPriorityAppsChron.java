@@ -2,9 +2,11 @@ package com.steam_analyser.analytics.application.schedulers;
 
 import java.time.Duration;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
-import in.dragonbra.javasteam.steam.steamclient.configuration.SteamConfiguration;
+import com.steam_analyser.analytics.application.services.SteamAppStatsService;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -13,9 +15,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class UpdatePlayersForPriorityAppsChron implements ISteamChron {
 
-  private final Duration executionFrequency = Duration.ofSeconds(10);
+  private final Duration executionFrequency = Duration.ofMinutes(15);
   private final SchedulerManager schedulerManager;
-  private SteamConfiguration steamConfiguration;
+  private final SteamAppStatsService steamAppStatsService;
 
   @Override
   public String getChronName() {
@@ -29,12 +31,12 @@ public class UpdatePlayersForPriorityAppsChron implements ISteamChron {
 
   @Override
   public void run() {
+    var priorityApps = steamAppStatsService.queryByPlayersPriority(PageRequest.of(0, 7500));
     log.info("Running update UpdatePlayersForPriorityAppsChron");
   }
 
   @Override
-  public void start(SteamConfiguration steamConfiguration) {
-    this.steamConfiguration = steamConfiguration;
+  public void start() {
     schedulerManager.scheduleChronIfAllowed(this);
   }
 }
