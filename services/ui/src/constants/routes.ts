@@ -1,5 +1,5 @@
 enum Routes {
-  MOST_PLAYED = "/steamCharts/mostPlayed"
+  MOST_PLAYED = "steamAppStats/top?page=0&size=1500&sort=current_players,desc"
 }
 
 export {

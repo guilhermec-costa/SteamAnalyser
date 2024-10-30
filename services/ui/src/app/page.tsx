@@ -8,11 +8,11 @@ import { useEffect, useState } from "react";
 import DashboardTable from "@/components/DashboardTable";
 
 export default function Home() {
-  const [games, setGames] = useState<MostPlayedResponse[]>([]);
+  const [games, setGames] = useState<MostPlayedResponse>({content: []});
 
   useEffect(() => {
     const fetchGames = async () => {
-      const response = await steamAnalyserAPI.get<MostPlayedResponse[]>(Routes.MOST_PLAYED);
+      const response = await steamAnalyserAPI.get<MostPlayedResponse>(Routes.MOST_PLAYED);
       setGames(response.data);
     }
     fetchGames();
@@ -37,11 +37,11 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="w-full max-w-6xl mx-auto">
+      {/* <section className="w-full max-w-6xl mx-auto">
         <div className="bg-gray-800 bg-opacity-50 shadow-2xl rounded-lg p-6">
           <h2 className="text-2xl font-semibold text-white mb-6">Current Players vs Peak Players</h2>
           <ResponsiveContainer width="100%" height={400}>
-            <BarChart data={games}>
+            <BarChart data={games.content}>
               <CartesianGrid strokeDasharray="3 3" stroke="#6b7280"/>
               <XAxis dataKey="name" tick={{ fill: '#ffffff' }} />
               <YAxis tick={{ fill: '#ffffff', fontSize: 14 }} />
@@ -66,7 +66,7 @@ export default function Home() {
             </BarChart>
           </ResponsiveContainer>
         </div>
-      </section>
+      </section> */}
     </div>
   );
 }

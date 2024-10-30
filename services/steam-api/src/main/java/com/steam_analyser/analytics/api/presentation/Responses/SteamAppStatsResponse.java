@@ -14,9 +14,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class SteamAppStatsResponse {
 
-  @JsonProperty("updated_at")
-  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-  private LocalDateTime updatedAt;
+  // @JsonProperty("updated_at")
+  // @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+  // private LocalDateTime updatedAt;
 
   @JsonProperty("_24hpeak")
   private Integer _24hpeak;
