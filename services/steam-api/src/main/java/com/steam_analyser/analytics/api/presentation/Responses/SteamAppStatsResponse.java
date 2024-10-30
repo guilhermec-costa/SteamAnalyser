@@ -21,7 +21,7 @@ public class SteamAppStatsResponse {
   @JsonProperty("_24hpeak")
   private Integer _24hpeak;
 
-  @JsonProperty("current_players")
+  @JsonProperty(value="current_players")
   private Integer currentPlayers;
 
   @JsonProperty("name")

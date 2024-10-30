@@ -4,19 +4,17 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.steam_analyser.analytics.data.models.SteamAppStatsModel;
 import com.steam_analyser.analytics.data.projections.PriorityAppsProjection;
 import com.steam_analyser.analytics.data.projections.SteamAppStatsProjection;
-import com.steam_analyser.analytics.data.types.PriorityApp;
+import com.steam_analyser.analytics.data.store.custom.CustomSteamAppStatsStore;
 
-import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface SteamAppStatsStore extends JpaRepository<SteamAppStatsModel, Long> {
+public interface SteamAppStatsStore extends JpaRepository<SteamAppStatsModel, Long>, CustomSteamAppStatsStore {
 
   Optional<SteamAppStatsModel> findBySteamAppId(Long localSteamAppId);
 

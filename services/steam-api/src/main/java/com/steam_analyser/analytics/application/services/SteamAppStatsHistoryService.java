@@ -1,18 +1,22 @@
 package com.steam_analyser.analytics.application.services;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.steam_analyser.analytics.data.models.SteamAppStatsHistoryModel;
 import com.steam_analyser.analytics.data.store.SteamAppStatsHistoryStore;
 import com.steam_analyser.analytics.data.types.PartialSteamAppStatsHistory;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 import java.util.ArrayList;
 
 @RequiredArgsConstructor
 @Service
+@Slf4j
+@Transactional
 public class SteamAppStatsHistoryService {
 
   private final SteamAppStatsHistoryStore steamAppStatsHistoryStore;
@@ -44,5 +48,12 @@ public class SteamAppStatsHistoryService {
 
   public void saveOne(final SteamAppStatsHistoryModel instance) {
     steamAppStatsHistoryStore.save(instance);
+  }
+
+  private final int EXPIRATION_DAYS_LIMIT = 7;
+
+  public void purgeExpiredHistories() {
+    int affectedRows = steamAppStatsHistoryStore.deleteExpiredHistoriesFromInterval(EXPIRATION_DAYS_LIMIT);
+    log.info(affectedRows + " rows deleted from steam_app_stats_history chron");
   }
 }
