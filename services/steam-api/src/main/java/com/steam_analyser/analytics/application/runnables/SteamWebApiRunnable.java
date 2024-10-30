@@ -57,7 +57,7 @@ public class SteamWebApiRunnable implements Runnable {
     this.username = steamSecrets.getUsername();
     this.password = steamSecrets.getPassword();
     this.scanner = new Scanner(System.in);
-    this.authToken = loadGuardData();
+    this.authToken = steamWebAPIService.getAuthToken();
     futureChrons = steamChrons;
     this.steamSecrets = steamSecrets;
     this.steamWebAPIService = steamWebAPIService;
@@ -123,7 +123,7 @@ public class SteamWebApiRunnable implements Runnable {
 
       if (pollResponse.getNewGuardData() != null) {
         previouslyStoredGuardData = pollResponse.getNewGuardData();
-        saveGuardData(pollResponse.getRefreshToken());
+        steamWebAPIService.storeAuthToken(pollResponse.getRefreshToken());
       }
 
       logOnWithToken(pollResponse.getRefreshToken());
@@ -176,22 +176,6 @@ public class SteamWebApiRunnable implements Runnable {
   private void onLoggedOff(LoggedOffCallback callback) {
     logger.info("Logged off of Steam: " + callback.getResult());
     isExecuting = false;
-  }
-
-  private void saveGuardData(String guardData) {
-    try (FileWriter fw = new FileWriter("./" + "guardData.txt")) {
-      fw.write(guardData);
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-  }
-
-  private String loadGuardData() {
-    try (BufferedReader reader = new BufferedReader(new FileReader("./" + "guardData.txt"))) {
-      return reader.readLine();
-    } catch (IOException e) {
-      return null;
-    }
   }
 
   private void handleAuthenticationException(Exception e) {

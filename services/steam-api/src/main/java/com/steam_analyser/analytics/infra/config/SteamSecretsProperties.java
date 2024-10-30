@@ -13,4 +13,5 @@ public class SteamSecretsProperties {
   private String key;
   private String username;
   private String password;
+  private String authTokenCacheKey;
 }

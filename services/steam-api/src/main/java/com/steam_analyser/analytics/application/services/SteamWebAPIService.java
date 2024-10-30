@@ -10,21 +10,31 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import com.steam_analyser.analytics.api.presentation.externalResponses.SingleSteamApp;
+import com.steam_analyser.analytics.application.services.abstractions.ICacheService;
+import com.steam_analyser.analytics.infra.config.SteamSecretsProperties;
 
 import in.dragonbra.javasteam.steam.steamclient.configuration.SteamConfiguration;
 import in.dragonbra.javasteam.types.KeyValue;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+@RequiredArgsConstructor
 @Service
 @Slf4j
 public class SteamWebAPIService {
-  
+
   private final int initialBackoff = 500;
   private final int retryLimit = 3;
   private SteamConfiguration steamConfiguration;
+
+  @Qualifier("redisService")
+  private final ICacheService cacheService;
+
+  private final SteamSecretsProperties steamSecretsProperties;
 
   public void setSteamConfiguration(SteamConfiguration config) {
     this.steamConfiguration = config;
@@ -74,7 +84,6 @@ public class SteamWebAPIService {
     }
   }
 
-
   public List<SingleSteamApp> parseSteamAppsResponse(KeyValue response) {
     List<SingleSteamApp> parsedApps = new ArrayList<>();
     var appsContainer = response.getChildren().get(0).getChildren();
@@ -85,5 +94,13 @@ public class SteamWebAPIService {
       parsedApps.add(new SingleSteamApp(Integer.parseInt(appId), appName));
     }
     return parsedApps;
+  }
+
+  public String getAuthToken() {
+    return (String) cacheService.get(steamSecretsProperties.getAuthTokenCacheKey());
+  }
+
+  public void storeAuthToken(String token) {
+    cacheService.set(steamSecretsProperties.getAuthTokenCacheKey(), token);
   }
 }
