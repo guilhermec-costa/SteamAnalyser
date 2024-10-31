@@ -4,7 +4,6 @@ import in.dragonbra.javasteam.enums.EResult;
 import in.dragonbra.javasteam.networking.steam3.ProtocolTypes;
 import in.dragonbra.javasteam.steam.handlers.steamuser.callback.LoggedOffCallback;
 import in.dragonbra.javasteam.steam.handlers.steamuser.callback.LoggedOnCallback;
-import in.dragonbra.javasteam.steam.steamclient.SteamClient;
 import in.dragonbra.javasteam.steam.steamclient.callbackmgr.CallbackManager;
 import in.dragonbra.javasteam.steam.steamclient.callbacks.ConnectedCallback;
 import in.dragonbra.javasteam.steam.steamclient.callbacks.DisconnectedCallback;
@@ -21,7 +20,6 @@ import java.util.List;
 @Slf4j
 public class SteamWebApiRunnable implements Runnable {
 
-  private SteamClient steamClient;
   private final SteamConfigManager steamConfigManager;
   private boolean isExecuting;
   private CallbackManager cbManager;
@@ -42,8 +40,7 @@ public class SteamWebApiRunnable implements Runnable {
   @Override
   public void run() {
     steamConfigManager.configureDefaultsWithConnectionType(ProtocolTypes.WEB_SOCKET);
-    steamClient = steamConfigManager.getClient();
-    cbManager = new CallbackManager(steamClient);
+    cbManager = new CallbackManager(steamConfigManager.getClient());
 
     cbManager.subscribe(ConnectedCallback.class, this::onConnected);
     cbManager.subscribe(DisconnectedCallback.class, this::onDisconnected);
@@ -52,7 +49,7 @@ public class SteamWebApiRunnable implements Runnable {
 
     isExecuting = true;
     log.info("Connecting to steam client...");
-    steamClient.connect();
+    steamConfigManager.connectClient();
 
     while (isExecuting) {
       cbManager.runWaitCallbacks(1000L);
@@ -83,7 +80,7 @@ public class SteamWebApiRunnable implements Runnable {
     } else {
       try {
         Thread.sleep(2000L);
-        steamClient.connect();
+        steamConfigManager.connectClient();
       } catch (InterruptedException e) {
         log.error("An Interrupted exception occurred. " + e.getMessage());
       }
@@ -98,8 +95,7 @@ public class SteamWebApiRunnable implements Runnable {
     }
 
     log.info("Successfully logged on!");
-    steamWebAPIService.setSteamConfiguration(steamClient.getConfiguration());
-
+    steamWebAPIService.setSteamConfiguration(steamConfigManager.getClient().getConfiguration());
     log.info("Starting chron jobs");
     for (var chron : futureChrons) {
       chron.start();

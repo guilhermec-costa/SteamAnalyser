@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 import com.steam_analyser.analytics.application.schedulers.ISteamChron;
 import com.steam_analyser.analytics.application.services.SteamConfigManager;
 import com.steam_analyser.analytics.application.services.SteamWebAPIProcessor;
-import com.steam_analyser.analytics.infra.config.SteamSecretsProperties;
 
 import in.dragonbra.javasteam.util.log.DefaultLogListener;
 import in.dragonbra.javasteam.util.log.LogManager;

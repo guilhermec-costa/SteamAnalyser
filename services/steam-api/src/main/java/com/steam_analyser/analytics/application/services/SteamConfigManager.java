@@ -115,4 +115,12 @@ public class SteamConfigManager {
   public void storeAuthToken(String token) {
     cacheService.set(steamSecrets.getAuthTokenCacheKey(), token);
   }
+
+  public void connectClient() {
+    client.connect();
+  }
+
+  public void disconnectClient() {
+    client.disconnect();
+  }
 }

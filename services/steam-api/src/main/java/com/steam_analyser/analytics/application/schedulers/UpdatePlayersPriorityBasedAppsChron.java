@@ -2,7 +2,6 @@ package com.steam_analyser.analytics.application.schedulers;
 
 import java.time.Duration;
 
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
 import com.steam_analyser.analytics.application.events.PlayerCountUnitUpdatedEvent;
@@ -10,7 +9,6 @@ import com.steam_analyser.analytics.application.services.ProfillingService;
 import com.steam_analyser.analytics.application.services.SteamAppService;
 import com.steam_analyser.analytics.application.services.SteamAppStatsService;
 import com.steam_analyser.analytics.application.services.SteamWebAPIProcessor;
-import com.steam_analyser.analytics.data.projections.PriorityAppsProjection;
 import com.steam_analyser.analytics.data.types.PartialSteamAppStatsHistory;
 import com.steam_analyser.analytics.data.types.PriorityApp;
 import com.steam_analyser.analytics.infra.mediator.Mediator;
