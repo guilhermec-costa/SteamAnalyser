@@ -6,6 +6,7 @@ import static com.steam_analyser.analytics.api.routes.SteamRouteMethods.GetAppLi
 import static com.steam_analyser.analytics.api.routes.SteamRouteMethods.GetNumberOfCurrentPlayers;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,30 +16,26 @@ import org.springframework.stereotype.Service;
 
 import com.steam_analyser.analytics.api.presentation.externalResponses.SingleSteamApp;
 import com.steam_analyser.analytics.application.services.abstractions.ICacheService;
-import com.steam_analyser.analytics.infra.config.SteamSecretsProperties;
 
 import in.dragonbra.javasteam.steam.steamclient.configuration.SteamConfiguration;
 import in.dragonbra.javasteam.types.KeyValue;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 @RequiredArgsConstructor
 @Service
 @Slf4j
-public class SteamWebAPIService {
+public class SteamWebAPIProcessor {
 
   private final int initialBackoff = 500;
   private final int retryLimit = 3;
+
+  @Setter
   private SteamConfiguration steamConfiguration;
 
   @Qualifier("redisService")
   private final ICacheService cacheService;
-
-  private final SteamSecretsProperties steamSecretsProperties;
-
-  public void setSteamConfiguration(SteamConfiguration config) {
-    this.steamConfiguration = config;
-  }
 
   public Integer retryQueryPlayerCountForApp(Integer steamAppId) {
     int currentAttempts = 0;
@@ -96,11 +93,18 @@ public class SteamWebAPIService {
     return parsedApps;
   }
 
-  public String getAuthToken() {
-    return (String) cacheService.get(steamSecretsProperties.getAuthTokenCacheKey());
+  public static void printKeyValue(KeyValue keyValue, int depth) {
+    String spacePadding = String.join("", Collections.nCopies(depth, "    "));
+
+    if (keyValue.getChildren().isEmpty()) {
+      System.out.println(spacePadding + keyValue.getName() + ": " + keyValue.getValue());
+      return;
+    }
+
+    System.out.println(spacePadding + keyValue.getName() + ":");
+    for (KeyValue child : keyValue.getChildren()) {
+      printKeyValue(child, depth + 1);
+    }
   }
 
-  public void storeAuthToken(String token) {
-    cacheService.set(steamSecretsProperties.getAuthTokenCacheKey(), token);
-  }
 }

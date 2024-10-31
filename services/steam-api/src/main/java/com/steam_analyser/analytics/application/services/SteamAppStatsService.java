@@ -4,7 +4,6 @@ import java.util.Optional;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,10 +17,7 @@ import com.steam_analyser.analytics.data.types.PriorityApp;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.Tuple;
 import lombok.RequiredArgsConstructor;
-
-import java.util.ArrayList;
 
 @RequiredArgsConstructor
 @Service

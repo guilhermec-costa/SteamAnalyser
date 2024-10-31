@@ -34,7 +34,7 @@ public class SchedulerManager implements ApplicationRunner {
         new HashMap<>(Map.of(ChronControllerFlags.SHOULD_RUN, false)));
 
     chronControllers.put(PurgeHistoryChron.class.getName(),
-        new HashMap<>(Map.of(ChronControllerFlags.SHOULD_RUN, true)));
+        new HashMap<>(Map.of(ChronControllerFlags.SHOULD_RUN, false)));
   }
 
   public <T extends ISteamChron> void scheduleChronIfAllowed(T chron) {

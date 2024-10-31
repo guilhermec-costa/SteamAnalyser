@@ -9,7 +9,7 @@ import com.steam_analyser.analytics.application.events.PlayerCountUnitUpdatedEve
 import com.steam_analyser.analytics.application.services.ProfillingService;
 import com.steam_analyser.analytics.application.services.SteamAppService;
 import com.steam_analyser.analytics.application.services.SteamAppStatsService;
-import com.steam_analyser.analytics.application.services.SteamWebAPIService;
+import com.steam_analyser.analytics.application.services.SteamWebAPIProcessor;
 import com.steam_analyser.analytics.data.projections.PriorityAppsProjection;
 import com.steam_analyser.analytics.data.types.PartialSteamAppStatsHistory;
 import com.steam_analyser.analytics.data.types.PriorityApp;
@@ -36,7 +36,7 @@ public class UpdatePlayersPriorityBasedAppsChron implements ISteamChron {
   private final ProfillingService profillingService;
   private final SteamAppService steamAppService;
   private final Executor executor = Executors.newFixedThreadPool(12);
-  private final SteamWebAPIService steamWebAPIService;
+  private final SteamWebAPIProcessor steamWebAPIService;
   private final int MAX_APPS_QUERY_LIMIT = 300000;
   private final int PRIMARY_PRIORITY_OFFSET = 7500;
   private final int SECONDARY_PRIORITY_OFFSET = PRIMARY_PRIORITY_OFFSET + 1;

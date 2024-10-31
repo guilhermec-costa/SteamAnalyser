@@ -15,7 +15,6 @@ public class RedisService implements ICacheService {
 
   public void set(String key, Object value) {
     redisTemplate.opsForValue().set(key, value);
-    ;
   }
 
   public Object get(String key) {

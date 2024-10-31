@@ -7,7 +7,7 @@ import com.steam_analyser.analytics.application.events.PlayerCountUnitUpdatedEve
 import com.steam_analyser.analytics.application.services.ProfillingService;
 import com.steam_analyser.analytics.application.services.SteamAppService;
 import com.steam_analyser.analytics.application.services.SteamAppStatsService;
-import com.steam_analyser.analytics.application.services.SteamWebAPIService;
+import com.steam_analyser.analytics.application.services.SteamWebAPIProcessor;
 import com.steam_analyser.analytics.data.models.SteamAppModel;
 import com.steam_analyser.analytics.data.models.SteamAppStatsModel;
 import com.steam_analyser.analytics.data.types.PartialSteamAppStatsHistory;
@@ -31,7 +31,7 @@ import java.time.Duration;
 public class UpdatePlayersForAllAppsChron implements ISteamChron {
 
   private final SteamAppService steamAppService;
-  private final SteamWebAPIService steamWebAPIService;
+  private final SteamWebAPIProcessor steamWebAPIService;
   private final SteamAppStatsService steamAppStatsService;
   private final Mediator mediator;
   private final SchedulerManager schedulerManager;

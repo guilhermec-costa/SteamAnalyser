@@ -6,7 +6,7 @@ import com.steam_analyser.analytics.api.presentation.externalResponses.SingleSte
 import com.steam_analyser.analytics.application.services.CloudFlareService;
 import com.steam_analyser.analytics.application.services.ProfillingService;
 import com.steam_analyser.analytics.application.services.SteamAppService;
-import com.steam_analyser.analytics.application.services.SteamWebAPIService;
+import com.steam_analyser.analytics.application.services.SteamWebAPIProcessor;
 import com.steam_analyser.analytics.data.models.SteamAppModel;
 
 import java.time.Duration;
@@ -31,7 +31,7 @@ public class RegisterNewAppsChron implements ISteamChron {
   private final ProfillingService profillingService;
   private final Executor executor = Executors.newFixedThreadPool(16);
   private final CloudFlareService cloudFlareService;
-  private final SteamWebAPIService steamWebAPIService;
+  private final SteamWebAPIProcessor steamWebAPIService;
   private final SchedulerManager schedulerManager;
   private final Duration executionFrequency = Duration.ofMinutes(90);
 
