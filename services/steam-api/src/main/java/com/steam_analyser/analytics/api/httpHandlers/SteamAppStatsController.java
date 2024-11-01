@@ -48,8 +48,9 @@ public class SteamAppStatsController {
   }
 
   @GetMapping("appHistory")
-  public ResponseEntity<List<AppHistoryProjection>> getAppHistory(@RequestParam Long localSteamAppId) {
+  public ResponseEntity<List<AppHistoryResponse>> getAppHistory(@RequestParam Long localSteamAppId) {
     var appHistory = steamAppStatsHistoryService.queryAppHistory(localSteamAppId);
-    return ResponseEntity.ok().body(appHistory);
+    var parsedHistories = modelMappingService.mapList(appHistory, AppHistoryResponse.class);
+    return ResponseEntity.ok().body(parsedHistories);
   }
 }

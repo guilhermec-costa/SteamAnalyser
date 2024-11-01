@@ -21,7 +21,9 @@ public interface SteamAppStatsHistoryStore
   Integer queryApp24hPeak(@Param("localSteamAppId") Long localSteamAppId);
 
   @Query(value = """
-    select sash.player_count, sash.snapshoted_at from steam_app_stats_history sash
-    """, nativeQuery = true)
+      select sash.player_count, sash.snapshoted_at from steam_app_stats_history sash
+      where sash.local_steam_app_id = :appId
+      order by sash.snapshoted_at desc;
+      """, nativeQuery = true)
   List<AppHistoryProjection> queryAppHistory(@Param("appId") Long appId);
 }
