@@ -5,7 +5,7 @@ import java.time.Duration;
 import org.springframework.stereotype.Component;
 
 import com.steam_analyser.analytics.application.events.PlayerCountUnitUpdatedEvent;
-import com.steam_analyser.analytics.application.services.ProfillingService;
+import com.steam_analyser.analytics.application.services.PerfomanceProfiller;
 import com.steam_analyser.analytics.application.services.SteamAppService;
 import com.steam_analyser.analytics.application.services.SteamAppStatsService;
 import com.steam_analyser.analytics.application.services.SteamWebAPIProcessor;
@@ -31,7 +31,7 @@ public class UpdatePlayersPriorityBasedAppsChron implements ISteamChron {
   private final SchedulerManager schedulerManager;
   private final Mediator mediator;
   private final SteamAppStatsService steamAppStatsService;
-  private final ProfillingService profillingService;
+  private final PerfomanceProfiller profillingService;
   private final SteamAppService steamAppService;
   private final Executor executor = Executors.newFixedThreadPool(12);
   private final SteamWebAPIProcessor steamWebAPIService;

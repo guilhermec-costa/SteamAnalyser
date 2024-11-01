@@ -5,7 +5,7 @@ import java.util.concurrent.CompletableFuture;
 
 import org.springframework.stereotype.Service;
 
-import com.steam_analyser.analytics.application.services.ProfillingService;
+import com.steam_analyser.analytics.application.services.PerfomanceProfiller;
 import com.steam_analyser.analytics.application.services.SteamAppStatsHistoryService;
 
 import lombok.RequiredArgsConstructor;
@@ -17,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 public class PurgeHistoryChron implements ISteamChron {
 
   private final SteamAppStatsHistoryService steamAppStatsHistoryService;
-  private final ProfillingService profillingService;
+  private final PerfomanceProfiller profillingService;
   private final SchedulerManager schedulerManager;
 
   @Override

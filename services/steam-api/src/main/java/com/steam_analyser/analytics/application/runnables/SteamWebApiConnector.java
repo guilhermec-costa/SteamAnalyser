@@ -12,49 +12,42 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.Scanner;
 
 import com.steam_analyser.analytics.application.schedulers.ISteamChron;
+import com.steam_analyser.analytics.application.services.GlobalCallbackDispatcher;
 import com.steam_analyser.analytics.application.services.SteamConfigManager;
 import com.steam_analyser.analytics.application.services.SteamWebAPIProcessor;
 
 import java.util.List;
 
 @Slf4j
-public class SteamWebApiRunnable implements Runnable {
+public class SteamWebApiConnector implements Runnable {
 
   private final SteamConfigManager steamConfigManager;
-  private boolean isExecuting;
-  private CallbackManager cbManager;
+  private GlobalCallbackDispatcher globalCallbackDispatcher;
   private Scanner scanner;
   private SteamWebAPIProcessor steamWebAPIService;
   private List<ISteamChron> futureChrons;
 
-  public SteamWebApiRunnable(
+  public SteamWebApiConnector(
       List<ISteamChron> steamChrons,
       SteamWebAPIProcessor steamWebAPIService,
-      SteamConfigManager steamConfigManager) {
+      SteamConfigManager steamConfigManager,
+      GlobalCallbackDispatcher globalCallbackDispatcher) {
     this.scanner = new Scanner(System.in);
     futureChrons = steamChrons;
     this.steamWebAPIService = steamWebAPIService;
     this.steamConfigManager = steamConfigManager;
+    this.globalCallbackDispatcher = globalCallbackDispatcher;
   }
 
   @Override
   public void run() {
-    steamConfigManager.configureDefaultsWithConnectionType(ProtocolTypes.WEB_SOCKET);
-    cbManager = new CallbackManager(steamConfigManager.getClient());
-
-    cbManager.subscribe(ConnectedCallback.class, this::onConnected);
-    cbManager.subscribe(DisconnectedCallback.class, this::onDisconnected);
-    cbManager.subscribe(LoggedOnCallback.class, this::onLoggedOn);
-    cbManager.subscribe(LoggedOffCallback.class, this::onLoggedOff);
-
-    isExecuting = true;
-    log.info("Connecting to steam client...");
+    globalCallbackDispatcher.whenConnected(this::onConnected);
+    globalCallbackDispatcher.whenDisconnected(this::onDisconnected);
+    globalCallbackDispatcher.whenLoggedOn(this::onLoggedOn);
+    globalCallbackDispatcher.whenLoggedOf(this::onLoggedOff);
+    globalCallbackDispatcher.enableCallbacksExecution();
     steamConfigManager.connectClient();
-
-    while (isExecuting) {
-      cbManager.runWaitCallbacks(1000L);
-    }
-
+    globalCallbackDispatcher.mainLoop();
     scanner.close();
   }
 
@@ -76,7 +69,7 @@ public class SteamWebApiRunnable implements Runnable {
     log.info("Disconnected from Steam Servers");
 
     if (callback.isUserInitiated()) {
-      isExecuting = false;
+      globalCallbackDispatcher.disableCallbacksExecution();
     } else {
       try {
         Thread.sleep(2000L);
@@ -90,12 +83,12 @@ public class SteamWebApiRunnable implements Runnable {
   private void onLoggedOn(LoggedOnCallback callback) {
     if (callback.getResult() != EResult.OK) {
       log.error("Unable to logon to Steam: " + callback.getResult() + " / " + callback.getExtendedResult());
-      isExecuting = false;
+      globalCallbackDispatcher.disableCallbacksExecution();
       return;
     }
 
     log.info("Successfully logged on!");
-    steamWebAPIService.setSteamConfiguration(steamConfigManager.getClient().getConfiguration());
+    steamWebAPIService.setSteamConfiguration(steamConfigManager.getGlobalClient().getConfiguration());
     log.info("Starting chron jobs");
     for (var chron : futureChrons) {
       chron.start();
@@ -104,6 +97,6 @@ public class SteamWebApiRunnable implements Runnable {
 
   private void onLoggedOff(LoggedOffCallback callback) {
     log.info("Logged off of Steam: " + callback.getResult());
-    isExecuting = false;
+    globalCallbackDispatcher.disableCallbacksExecution();
   }
 }

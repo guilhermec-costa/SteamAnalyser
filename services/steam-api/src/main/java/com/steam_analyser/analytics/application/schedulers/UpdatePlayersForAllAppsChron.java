@@ -4,7 +4,7 @@ import org.springframework.stereotype.Component;
 
 import com.steam_analyser.analytics.application.events.PlayerCountBatchUpdatedEvent;
 import com.steam_analyser.analytics.application.events.PlayerCountUnitUpdatedEvent;
-import com.steam_analyser.analytics.application.services.ProfillingService;
+import com.steam_analyser.analytics.application.services.PerfomanceProfiller;
 import com.steam_analyser.analytics.application.services.SteamAppService;
 import com.steam_analyser.analytics.application.services.SteamAppStatsService;
 import com.steam_analyser.analytics.application.services.SteamWebAPIProcessor;
@@ -35,7 +35,7 @@ public class UpdatePlayersForAllAppsChron implements ISteamChron {
   private final SteamAppStatsService steamAppStatsService;
   private final Mediator mediator;
   private final SchedulerManager schedulerManager;
-  private final ProfillingService profillingService;
+  private final PerfomanceProfiller profillingService;
   private final Executor executor = Executors.newFixedThreadPool(48);
   private final Duration executionFrequency = Duration.ofMinutes(90);
   private final int batchSize = 250;

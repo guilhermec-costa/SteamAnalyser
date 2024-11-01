@@ -6,6 +6,7 @@ import java.util.concurrent.CancellationException;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import com.steam_analyser.analytics.api.presentation.requests.LoginRequest;
 import com.steam_analyser.analytics.application.services.abstractions.ICacheService;
 import com.steam_analyser.analytics.data.types.SteamAuthUser;
 import com.steam_analyser.analytics.infra.config.SteamSecretsProperties;
@@ -36,10 +37,10 @@ public class SteamConfigManager {
 
   @Getter
   @Setter
-  private SteamClient client;
+  private SteamClient globalClient;
 
   private SteamAuthUser loggedUser;
-  private SteamUser steamUser;
+  private SteamUser systemSteamUser;
 
   public SteamConfigManager(
       final SteamSecretsProperties steamSecrets,
@@ -50,6 +51,12 @@ public class SteamConfigManager {
         steamSecrets.getUsername(),
         steamSecrets.getPassword(),
         "");
+    
+    configureDefaultsWithConnectionType(ProtocolTypes.WEB_SOCKET);
+  }
+
+  public SteamClient generateDefaultClient() {
+    return new SteamClient();
   }
 
   public void configureDefaultsWithConnectionType(ProtocolTypes protocolType) {
@@ -59,8 +66,8 @@ public class SteamConfigManager {
       builder.withWebAPIKey(steamSecrets.getKey());
     });
 
-    client = new SteamClient(steamConfiguration);
-    steamUser = client.getHandler(SteamUser.class);
+    globalClient = new SteamClient(steamConfiguration);
+    systemSteamUser = globalClient.getHandler(SteamUser.class);
   }
 
   public void logOnWithToken(String token) {
@@ -68,7 +75,7 @@ public class SteamConfigManager {
     details.setUsername(this.loggedUser.getUsername());
     details.setAccessToken(token);
     details.setLoginID(149);
-    steamUser.logOn(details);
+    systemSteamUser.logOn(details);
   }
 
   public void authenticateWithCredentials() {
@@ -82,7 +89,7 @@ public class SteamConfigManager {
     authDetails.authenticator = new UserConsoleAuthenticator();
 
     try {
-      var authSession = client.getAuthentication().beginAuthSessionViaCredentials(authDetails);
+      var authSession = globalClient.getAuthentication().beginAuthSessionViaCredentials(authDetails);
       AuthPollResult pollResponse = authSession.pollingWaitForResultCompat().get();
 
       if (pollResponse.getNewGuardData() != null) {
@@ -96,6 +103,15 @@ public class SteamConfigManager {
     }
   }
 
+  public void defaultAuthentication(final LoginRequest request) {
+    var newClient = generateDefaultClient();
+    var newUserHandler = newClient.getHandler(SteamUser.class);
+    LogOnDetails details = new LogOnDetails();
+    details.setUsername(request.getUsername());
+    details.setPassword(request.getPassword());
+    newUserHandler.logOn(details);
+  }
+
   private void handleAuthenticationException(Exception e) {
     if (e instanceof AuthenticationException) {
       log.error("An Authentication error has occurred. " + e.getMessage());
@@ -105,7 +121,7 @@ public class SteamConfigManager {
       log.error("An error occurred:" + e.getMessage());
     }
 
-    steamUser.logOff();
+    systemSteamUser.logOff();
   }
 
   public String getAuthToken() {
@@ -117,10 +133,11 @@ public class SteamConfigManager {
   }
 
   public void connectClient() {
-    client.connect();
+    log.info("Connecting to steam client...");
+    globalClient.connect();
   }
 
   public void disconnectClient() {
-    client.disconnect();
+    globalClient.disconnect();
   }
 }

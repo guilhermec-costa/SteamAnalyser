@@ -4,7 +4,7 @@ import org.springframework.stereotype.Component;
 
 import com.steam_analyser.analytics.api.presentation.externalResponses.SingleSteamApp;
 import com.steam_analyser.analytics.application.services.CloudFlareService;
-import com.steam_analyser.analytics.application.services.ProfillingService;
+import com.steam_analyser.analytics.application.services.PerfomanceProfiller;
 import com.steam_analyser.analytics.application.services.SteamAppService;
 import com.steam_analyser.analytics.application.services.SteamWebAPIProcessor;
 import com.steam_analyser.analytics.data.models.SteamAppModel;
@@ -28,7 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 public class RegisterNewAppsChron implements ISteamChron {
 
   private final SteamAppService steamAppService;
-  private final ProfillingService profillingService;
+  private final PerfomanceProfiller profillingService;
   private final Executor executor = Executors.newFixedThreadPool(16);
   private final CloudFlareService cloudFlareService;
   private final SteamWebAPIProcessor steamWebAPIService;

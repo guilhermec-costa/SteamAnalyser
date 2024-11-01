@@ -5,7 +5,7 @@ import java.time.Duration;
 import java.time.Instant;
 
 @Service
-public class ProfillingService {
+public class PerfomanceProfiller {
   
   public Instant getNow() {
     return Instant.now();
