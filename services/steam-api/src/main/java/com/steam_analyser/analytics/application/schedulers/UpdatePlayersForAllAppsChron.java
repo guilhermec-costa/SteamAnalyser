@@ -62,7 +62,7 @@ public class UpdatePlayersForAllAppsChron implements ISteamChron {
   private CompletableFuture<Void> processAppUnitPararelly(SteamAppModel app) {
     return CompletableFuture.runAsync(() -> {
       SteamAppStatsModel actUponAppStats = steamAppStatsService.findOrCreateStatsModelInstance(app);
-      Integer newPlayerCount = steamWebAPIService.retryQueryPlayerCountForApp(app.getSteamAppId());
+      Integer newPlayerCount = steamWebAPIService.retryQueryPlayerCountForApp(app.getSteamAppId(), 500);
 
       if (steamAppStatsService.canUpdateAppStatsPlayerCount(actUponAppStats.getCurrentPlayers(), newPlayerCount)) {
         actUponAppStats.updateCurrentPlayers(newPlayerCount);
@@ -80,7 +80,7 @@ public class UpdatePlayersForAllAppsChron implements ISteamChron {
 
       for (var nextApp : batch) {
         SteamAppStatsModel actUponAppStats = steamAppStatsService.findOrCreateStatsModelInstance(nextApp);
-        Integer playerCount = steamWebAPIService.retryQueryPlayerCountForApp(nextApp.getSteamAppId());
+        Integer playerCount = steamWebAPIService.retryQueryPlayerCountForApp(nextApp.getSteamAppId(), 500);
 
         if (steamAppStatsService.canUpdateAppStatsPlayerCount(actUponAppStats.getCurrentPlayers(), playerCount)) {
           actUponAppStats.updateCurrentPlayers(playerCount);

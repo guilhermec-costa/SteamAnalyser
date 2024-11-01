@@ -44,7 +44,7 @@ public class SteamWebApiConnector implements Runnable {
     globalCallbackDispatcher.whenConnected(this::onConnected);
     globalCallbackDispatcher.whenDisconnected(this::onDisconnected);
     globalCallbackDispatcher.whenLoggedOn(this::onLoggedOn);
-    globalCallbackDispatcher.whenLoggedOf(this::onLoggedOff);
+    globalCallbackDispatcher.whenLoggedOff(this::onLoggedOff);
     globalCallbackDispatcher.enableCallbacksExecution();
     steamConfigManager.connectClient();
     globalCallbackDispatcher.mainLoop();

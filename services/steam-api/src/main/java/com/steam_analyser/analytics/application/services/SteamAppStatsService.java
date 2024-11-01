@@ -66,8 +66,8 @@ public class SteamAppStatsService {
     return app.getCurrentPlayers();
   }
 
-  public Page<SteamAppStatsProjection> presentAppsStats(Pageable pageable) {
-    return steamAppStatsStore.presentAppsStatsQuery(pageable);
+  public Page<SteamAppStatsProjection> queryTopApps(Pageable pageable) {
+    return steamAppStatsStore.findtopApps(pageable);
   }
 
   private final float MIN_ANOMALOUS_COUNT_PCT = 0.15F;

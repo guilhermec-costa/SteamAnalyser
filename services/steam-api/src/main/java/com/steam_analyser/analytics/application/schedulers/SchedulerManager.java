@@ -28,7 +28,7 @@ public class SchedulerManager implements ApplicationRunner {
         new HashMap<>(Map.of(ChronControllerFlags.SHOULD_RUN, false)));
 
     chronControllers.put(UpdatePlayersPriorityBasedAppsChron.class.getName(),
-        new HashMap<>(Map.of(ChronControllerFlags.SHOULD_RUN, false)));
+        new HashMap<>(Map.of(ChronControllerFlags.SHOULD_RUN, true)));
 
     chronControllers.put(UpdatePlayersForAllAppsChron.class.getName(),
         new HashMap<>(Map.of(ChronControllerFlags.SHOULD_RUN, false)));

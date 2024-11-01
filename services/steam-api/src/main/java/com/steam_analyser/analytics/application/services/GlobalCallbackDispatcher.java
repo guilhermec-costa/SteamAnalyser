@@ -24,7 +24,7 @@ public class GlobalCallbackDispatcher {
     cbManager.subscribe(LoggedOnCallback.class, fn);
   }
 
-  public void whenLoggedOf(Consumer<LoggedOffCallback> fn) {
+  public void whenLoggedOff(Consumer<LoggedOffCallback> fn) {
     cbManager.subscribe(LoggedOffCallback.class, fn);
   }
 

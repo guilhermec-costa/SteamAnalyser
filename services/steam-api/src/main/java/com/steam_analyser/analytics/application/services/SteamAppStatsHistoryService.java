@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.steam_analyser.analytics.data.models.SteamAppStatsHistoryModel;
+import com.steam_analyser.analytics.data.projections.AppHistoryProjection;
 import com.steam_analyser.analytics.data.store.SteamAppStatsHistoryStore;
 import com.steam_analyser.analytics.data.types.PartialSteamAppStatsHistory;
 
@@ -55,5 +56,9 @@ public class SteamAppStatsHistoryService {
   public void purgeExpiredHistories() {
     int affectedRows = steamAppStatsHistoryStore.deleteExpiredHistoriesFromInterval(EXPIRATION_DAYS_LIMIT);
     log.info(affectedRows + " rows deleted from steam_app_stats_history chron");
+  }
+
+  public List<AppHistoryProjection> queryAppHistory(final Long appId) {
+    return steamAppStatsHistoryStore.queryAppHistory(appId);
   }
 }

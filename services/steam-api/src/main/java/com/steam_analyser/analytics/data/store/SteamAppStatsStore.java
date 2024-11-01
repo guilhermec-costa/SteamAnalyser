@@ -24,7 +24,7 @@ public interface SteamAppStatsStore extends JpaRepository<SteamAppStatsModel, Lo
       inner join steam_app sa on sa.id = sacs.local_steam_app_id
       where sacs.current_players > 0
       """, nativeQuery = true)
-  Page<SteamAppStatsProjection> presentAppsStatsQuery(Pageable pageable);
+  Page<SteamAppStatsProjection> findtopApps(Pageable pageable);
 
   @Query(value = """
       select sacs.current_players, sa.id, sa.steam_app_id, sa from steam_app_current_stats sacs

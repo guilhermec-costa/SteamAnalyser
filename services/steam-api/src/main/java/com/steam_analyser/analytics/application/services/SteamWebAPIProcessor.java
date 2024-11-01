@@ -28,7 +28,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class SteamWebAPIProcessor {
 
-  private final int initialBackoff = 500;
   private final int retryLimit = 3;
 
   @Setter
@@ -37,7 +36,7 @@ public class SteamWebAPIProcessor {
   @Qualifier("redisService")
   private final ICacheService cacheService;
 
-  public Integer retryQueryPlayerCountForApp(Integer steamAppId) {
+  public Integer retryQueryPlayerCountForApp(Integer steamAppId, int initialBackoff) {
     int currentAttempts = 0;
     int backoff = initialBackoff;
 
