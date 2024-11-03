@@ -53,15 +53,15 @@ public class UpdatePlayersPriorityBasedAppsChron implements ISteamChron {
   public void run() {
     var start = profillingService.getNow();
     var primaryPriorityApps = steamAppStatsService.queryByPlayersPriorityOffset(0, PRIMARY_PRIORITY_OFFSET);
-    // var secondaryPriorityApps = steamAppStatsService.queryByPlayersPriorityOffset(SECONDARY_PRIORITY_OFFSET, MAX_APPS_QUERY_LIMIT);
+    var secondaryPriorityApps = steamAppStatsService.queryByPlayersPriorityOffset(SECONDARY_PRIORITY_OFFSET, MAX_APPS_QUERY_LIMIT);
     List<CompletableFuture<Void>> primaryFutures = primaryPriorityApps.stream().map(this::processExistingAppStats)
         .collect(Collectors.toList());
 
-    // List<CompletableFuture<Void>> secondaryFutures = secondaryPriorityApps.stream().map(this::processExistingAppStats)
-    //     .collect(Collectors.toList());
+    List<CompletableFuture<Void>> secondaryFutures = secondaryPriorityApps.stream().map(this::processExistingAppStats)
+        .collect(Collectors.toList());
 
     CompletableFuture.allOf(primaryFutures.toArray(new CompletableFuture[0])).join();
-    // CompletableFuture.allOf(secondaryFutures.toArray(new CompletableFuture[0])).join();
+    CompletableFuture.allOf(secondaryFutures.toArray(new CompletableFuture[0])).join();
 
     var end = profillingService.getNow();
     var executionDuration = profillingService.measureTimeBetween(start, end);

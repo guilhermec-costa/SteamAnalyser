@@ -8,7 +8,6 @@ import com.steam_analyser.analytics.api.presentation.responses.SteamAppStatsResp
 import com.steam_analyser.analytics.application.services.ModelMappingService;
 import com.steam_analyser.analytics.application.services.SteamAppStatsHistoryService;
 import com.steam_analyser.analytics.application.services.SteamAppStatsService;
-import com.steam_analyser.analytics.data.projections.AppHistoryProjection;
 
 import lombok.RequiredArgsConstructor;
 
